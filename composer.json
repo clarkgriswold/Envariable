@@ -1,5 +1,5 @@
 {
-    "name": "clarkgriswold/envariable",
+    "name": "clarkgritzwold/envariable",
     "description": "A better way to keep environment variables outside of your project -- and outside of version control -- while keeping them available to the CLI (e.g., cron jobs).",
     "license": "MIT",
     "authors": [
