@@ -1,6 +1,6 @@
 <?php
 
-namespace Envariable\Lib;
+namespace Envariable;
 
 class Main
 {
