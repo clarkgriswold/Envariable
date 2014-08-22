@@ -1,9 +1,10 @@
 <?php
 
 return array(
-    'hostList' => array(
-        'www.adventuredivers.ca',
-        'staging.adventuredivers.ca',
-        'dev.adventuredivers.ca',
+    'cliDefaultHost'       => 'production',
+    'environmentToHostMap' => array(
+        'production' => 'www.adventuredivers.ca',
+        'staging'    => 'staging.adventuredivers.ca',
+        'local'      => 'dev.adventuredivers.ca',
     ),
 );

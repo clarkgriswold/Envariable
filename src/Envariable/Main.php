@@ -14,10 +14,30 @@ class Main
 
         $config = require($configFilePath);
 
-        foreach ($config['hostList'] as $host) {
-            echo $host, PHP_EOL;
+        $this->defineEnvironment($config);
+    }
+
+    private function defineEnvironment(array $config)
+    {
+        if (defined('STDIN')) {
+            define('ENVIRONMENT', $config['cliDefaultHost']);
+
+            return;
         }
 
-        define('TEST', 'testing');
+        foreach ($config['environmentToHostMap'] as $environment => $host) {
+            $this->setEnvironment($environment, $host);
+        }
+    }
+
+    private function setEnvironment($environment, $host)
+    {
+        if (isset($_SERVER['SERVER_NAME']) && $_SERVER['SERVER_NAME'] === $host) {
+            define('ENVIRONMENT', $environment);
+
+            return;
+        }
+
+        throw new \Exception('Could not determine the environment');
     }
 }
