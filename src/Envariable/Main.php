@@ -17,5 +17,7 @@ class Main
         foreach ($config['hostList'] as $host) {
             echo $host, PHP_EOL;
         }
+
+        define('TEST', 'testing');
     }
 }
