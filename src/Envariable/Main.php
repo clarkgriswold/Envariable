@@ -28,16 +28,16 @@ class Main
         foreach ($config['environmentToHostMap'] as $environment => $host) {
             $this->setEnvironment($environment, $host);
         }
+
+        if ( ! defined('ENVIRONMENT')) {
+            throw new \Exception('Could not determine the environment');
+        }
     }
 
     private function setEnvironment($environment, $host)
     {
         if (isset($_SERVER['SERVER_NAME']) && $_SERVER['SERVER_NAME'] === $host) {
             define('ENVIRONMENT', $environment);
-
-            return;
         }
-
-        throw new \Exception('Could not determine the environment');
     }
 }
