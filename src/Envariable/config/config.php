@@ -5,14 +5,14 @@ return array(
     // Array of all hosts your application will use mapped
     // to their respective environment names.
     'environmentToHostMap' => array(
-        'production' => 'www.adventuredivers.ca',
-        'staging'    => 'staging.adventuredivers.ca',
-        'local'      => 'dev.adventuredivers.ca',
+        // Examples:
+        // 'production' => 'example.com',
+        // 'testing'    => 'test.example.com',
     ),
 
-    // The default environment with CLI. You may wish to
-    // change this when testing on your testing, staging
-    // or QA servers.
+    // The default environment with CLI. You may wish to change
+    // this when testing on your testing, staging or QA servers
+    // (whatever you call it).
     'cliDefaultHost' => 'production',
 
     // Path to your custom environment config. It would be

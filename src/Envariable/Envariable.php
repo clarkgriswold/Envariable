@@ -5,118 +5,99 @@
 
 namespace Envariable;
 
+use Envariable\Util\PathHelper;
+
 /**
+ * Put Custom Environment Settings Into the Environment Store.
  *
- * @author Mark Kasaboski <markkasaboski@gmail.com>
+ * @author Mark Kasaboski <mark.kasaboski@gmail.com>
  */
 class Envariable
 {
     /**
-     * @var array
+     * @param array                       $config
+     * @param \Envariable\Util\PathHelper $pathHelper
      */
-    private $config;
-
-    /**
-     * ...
-     */
-    public function __construct()
+    public function __construct(array $config, PathHelper $pathHelper = null)
     {
-        $configFilePath = __DIR__ . '/config/config.php';
-
-        if ( ! file_exists($configFilePath)) {
-            throw new \Exception('Configuration file is required.');
-        }
-
-        $this->config = $this->requireConfigFile($configFilePath);
-
-        $this->defineEnvironment();
-        $this->defineCustomeEnvironmentConfigs();
-    }
-
-    /**
-     * Define the environment constant.
-     */
-    private function defineEnvironment()
-    {
-        if (PHP_SAPI === 'cli') {
-            define('ENVIRONMENT', $this->config['cliDefaultHost']);
-
-            return;
-        }
-
-        foreach ($this->config['environmentToHostMap'] as $environment => $host) {
-            if (isset($_SERVER['SERVER_NAME']) && $_SERVER['SERVER_NAME'] === $host) {
-                define('ENVIRONMENT', $environment);
-            }
-        }
-
-        if ( ! defined('ENVIRONMENT')) {
-            throw new \Exception('Could not determine the environment');
-        }
-    }
-
-    /**
-     * Define
-     */
-    private function defineCustomeEnvironmentConfigs()
-    {
-        $applicationRootPath             = $this->getApplicationRootPath();
+        $pathHelper                      = $pathHelper ?: new PathHelper();
+        $applicationRootPath             = $pathHelper->getApplicationRootPath();
         $customEnvironmentConfigFilePath = sprintf('%s/.env.%s.php', $applicationRootPath, ENVIRONMENT);
 
-        if ($this->config['customEnvironmentConfigPath'] !== null) {
-            $customEnvironmentConfigPath     = rtrim($this->config['customEnvironmentConfigPath'], '/') . '/';
+        if ($config['customEnvironmentConfigPath'] !== null) {
+            $customEnvironmentConfigPath     = rtrim($config['customEnvironmentConfigPath'], '/') . '/';
             $customEnvironmentConfigFilePath = sprintf('%s/%s.env.%s.php', $applicationRootPath, $customEnvironmentConfigPath, ENVIRONMENT);
         }
 
-        $customEnvironmentConfigMap = $this->requireConfigFile($customEnvironmentConfigFilePath);
+        $customEnvironmentConfigMap = require($customEnvironmentConfigFilePath);
 
-        $this->putCustomEnvironmentSettings($customEnvironmentConfigMap);
+        $this->putEnv($customEnvironmentConfigMap);
     }
 
     /**
-     * Recurse over the user's custom environment config array and store the
-     * settings within the environment variable store.
+     * Recurse over the application's custom environment config array
+     * and store the settings within the environment variable store.
      *
      * @param array       $configMap
      * @param string|null $prefix
      */
-    private function putCustomEnvironmentSettings(array $configMap, $prefix = null)
+    private function putEnv(array $configMap, $prefix = null)
     {
+        if (count($configMap) === 0) {
+            throw new \RuntimeException('Your custom environment config is empty.');
+        }
+
         foreach ($configMap as $key => $value) {
             if (is_array($value)) {
-                $this->putCustomEnvironmentSettings($value, $key);
+                if ($prefix !== null) {
+                    $key = sprintf('%s_%s', $prefix, $key);
+                }
+
+                $this->putEnv($value, $key);
 
                 continue;
             }
 
-            $setting = sprintf('%s_%s=%s', strtoupper($prefix), strtoupper($key), $value);
-
-            putenv($setting);
+            $this->defineWithinENVSuperGlobal($prefix, $key, $value);
+            $this->defineWithinEnvironmentStore($prefix, $key, $value);
         }
     }
 
     /**
-     * Retrieve the application root path.
+     * Define the custom environment variable within the $_ENV super global array.
      *
-     * @return string
+     * @param string $prefix
+     * @param string $key
+     * @param string $value
      */
-    private function getApplicationRootPath()
+    private function defineWithinENVSuperGlobal($prefix, $key, $value)
     {
-        $backtrace = debug_backtrace();
-        $backtrace = end($backtrace);
+        $key = sprintf('%s_%s', strtoupper($prefix), strtoupper($key));
 
-        return substr($backtrace['file'], 0, strrpos($backtrace['file'], '/'));
+        if (array_key_exists($key, $_ENV)) {
+            throw new \Exception('Array key "' . $key . '" already exists. Aborting.');
+        }
+
+        $_ENV[$key] = $value;
     }
 
     /**
-     * Load a specified config file.
+     * Define the custom environment variable within the environment store.
      *
-     * @param string $configFilePath
-     *
-     * @return array
+     * @param string $prefix
+     * @param string $key
+     * @param string $value
      */
-    private function requireConfigFile($configFilePath)
+    private function defineWithinEnvironmentStore($prefix, $key, $value)
     {
-        return require($configFilePath);
+        $environmentVariableName = sprintf('%s_%s', strtoupper($prefix), strtoupper($key));
+
+        if (getenv($environmentVariableName)) {
+            throw new \Exception('An environment variable with the name "' . $environmentVariableName . '" already exists. Aborting.');
+        }
+
+        $setting = sprintf('%s=%s', $environmentVariableName, $value);
+
+        putenv($setting);
     }
 }
