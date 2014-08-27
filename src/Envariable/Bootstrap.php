@@ -41,6 +41,9 @@ class Bootstrap
 
         $environment = $environment ?: new Environment($configMap);
         $envariable  = $envariable  ?: new Envariable($configMap);
+
+        $environment->detect();
+        $envariable->putEnv();
     }
 
     /**

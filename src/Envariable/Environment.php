@@ -5,6 +5,8 @@
 
 namespace Envariable;
 
+use Envariable\Util\ServerInterfaceHelper;
+
 /**
  * Detect and Define the Environment.
  *
@@ -13,11 +15,31 @@ namespace Envariable;
 class Environment
 {
     /**
+     * @var array
+     */
+    private $configMap;
+
+    /**
+     * @var \Envariable\Util\ServerInterfaceHelper
+     */
+    private $serverAPIHelper;
+
+    /**
      * @param array $configMap
      */
     public function __construct(array $configMap)
     {
-        $this->detect($configMap);
+        $this->configMap = $configMap;
+    }
+
+    /**
+     * Define the Server Interface Helper
+     *
+     * @param \Envariable\Util\ServerInterfaceHelper $serverInterfaceHelper
+     */
+    public function setServerInterfaceHelper(ServerInterfaceHelper $serverInterfaceHelper)
+    {
+        $this->serverInterfaceHelper = $serverInterfaceHelper;
     }
 
     /**
@@ -25,19 +47,19 @@ class Environment
      *
      * @return void
      */
-    private function detect(array $configMap)
+    public function detect()
     {
-        if (PHP_SAPI === 'cli') {
-            define('ENVIRONMENT', $configMap['cliDefaultHost']);
+        if ($this->serverInterfaceHelper->getType() === 'cli') {
+            define('ENVIRONMENT', $this->configMap['cliDefaultEnvironment']);
 
             return;
         }
 
-        if (count($configMap['environmentToHostMap']) === 0) {
+        if (count($this->configMap['environmentToHostMap']) === 0) {
             throw new \Exception('You have not defined any hosts within the "environmentToHostMap" array within Envariable config.');
         }
 
-        foreach ($configMap['environmentToHostMap'] as $environment => $host) {
+        foreach ($this->configMap['environmentToHostMap'] as $environment => $host) {
             if ( ! $this->isHostValid($host)) {
                 continue;
             }

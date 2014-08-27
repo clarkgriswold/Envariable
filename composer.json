@@ -8,13 +8,19 @@
             "email": "mark.kasaboski@gmail.com"
         }
     ],
-    "minimum-stability": "1.0.0",
+    "minimum-stability": "dev",
     "require": {
         "php": ">=5.3.0"
     },
+    "require-dev": {
+        "phpspec/phpspec": "~2.1@dev"
+    },
     "autoload": {
         "psr-4": {
-            "Envariable\\": "src/Envariable"
+            "Envariable\\": "src"
         }
+    },
+    "config": {
+        "bin-dir": "bin"
     }
 }

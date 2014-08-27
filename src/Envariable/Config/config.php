@@ -13,7 +13,7 @@ return array(
     // The default environment with CLI. You may wish to change
     // this when testing on your testing, staging or QA servers
     // (whatever you call it).
-    'cliDefaultHost' => 'production',
+    'cliDefaultEnvironment' => 'production',
 
     // Path to your custom environment config. It would be
     // preferrable to keep these outside of your servers public

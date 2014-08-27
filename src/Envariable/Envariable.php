@@ -15,6 +15,11 @@ use Envariable\Util\PathHelper;
 class Envariable
 {
     /**
+     * @var array
+     */
+    private $customEnvironmentConfigMap;
+
+    /**
      * @param array                       $config
      * @param \Envariable\Util\PathHelper $pathHelper
      */
@@ -29,9 +34,16 @@ class Envariable
             $customEnvironmentConfigFilePath = sprintf('%s/%s.env.%s.php', $applicationRootPath, $customEnvironmentConfigPath, ENVIRONMENT);
         }
 
-        $customEnvironmentConfigMap = require($customEnvironmentConfigFilePath);
+        $this->customEnvironmentConfigMap = require($customEnvironmentConfigFilePath);
+    }
 
-        $this->putEnv($customEnvironmentConfigMap);
+    /**
+     * Execute the process of iterating over the custom config and
+     * storing the data within environment variables.
+     */
+    public function putEnv()
+    {
+        $this->execute($this->customEnvironmentConfigMap);
     }
 
     /**
@@ -41,7 +53,7 @@ class Envariable
      * @param array       $configMap
      * @param string|null $prefix
      */
-    private function putEnv(array $configMap, $prefix = null)
+    private function execute(array $configMap, $prefix = null)
     {
         if (count($configMap) === 0) {
             throw new \RuntimeException('Your custom environment config is empty.');
@@ -53,7 +65,7 @@ class Envariable
                     $key = sprintf('%s_%s', $prefix, $key);
                 }
 
-                $this->putEnv($value, $key);
+                $this->execute($value, $key);
 
                 continue;
             }
