@@ -47,10 +47,11 @@ class Bootstrap
 
         $serverInterfaceHelper = $serverInterfaceHelper ?: new ServerInterfaceHelper();
         $environment           = $environment ?: new Environment($configMap);
-        $envariable            = $envariable ?: new Envariable($configMap);
 
         $environment->setServerInterfaceHelper($serverInterfaceHelper);
         $environment->detect();
+
+        $envariable = $envariable ?: new Envariable($configMap);
         $envariable->putEnv();
     }
 
