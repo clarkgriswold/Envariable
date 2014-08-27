@@ -8,6 +8,7 @@ namespace Envariable;
 use Envariable\Envariable;
 use Envariable\Environment;
 use Envariable\Util\PathHelper;
+use Envariable\Util\ServerInterfaceHelper;
 
 /**
  * Bootstrap Envariable
@@ -17,12 +18,17 @@ use Envariable\Util\PathHelper;
 class Bootstrap
 {
     /**
-     * @param \Envariable\Envariable|null      $envariable
-     * @param \Envariable\Environment|null     $environment
-     * @param \Envariable\Util\PathHelper|null $pathHelper
+     * @param \Envariable\Envariable|null                 $envariable
+     * @param \Envariable\Environment|null                $environment
+     * @param \Envariable\Util\PathHelper|null            $pathHelper
+     * @param \Envariable\Util\ServerinterfaceHelper|null $serverInterfaceHelper
      */
-    public function __construct(Envariable $envariable = null, Environment $environment = null, PathHelper $pathHelper = null)
-    {
+    public function __construct(
+        Envariable $envariable = null,
+        Environment $environment = null,
+        PathHelper $pathHelper = null,
+        ServerInterfaceHelper $serverInterfaceHelper = null
+    ) {
         $pathHelper                  = $pathHelper ?: new PathHelper();
         $applicationRootPath         = $pathHelper->getApplicationRootPath();
         $applicationConfigFolderPath = $applicationRootPath . '/application/config';
@@ -39,9 +45,11 @@ class Bootstrap
 
         $configMap = require($configFilePath);
 
-        $environment = $environment ?: new Environment($configMap);
-        $envariable  = $envariable  ?: new Envariable($configMap);
+        $serverInterfaceHelper = $serverInterfaceHelper ?: new ServerInterfaceHelper();
+        $environment           = $environment ?: new Environment($configMap);
+        $envariable            = $envariable ?: new Envariable($configMap);
 
+        $environment->setServerInterfaceHelper($serverInterfaceHelper);
         $environment->detect();
         $envariable->putEnv();
     }

@@ -17,7 +17,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Envariable\\": "src"
+            "Envariable\\": "src/Envariable"
         }
     },
     "config": {
