@@ -5,7 +5,8 @@
 
 namespace Envariable;
 
-use Envariable\Util\ServerInterfaceHelper;
+use Envariable\Helpers\EnvironmentHelper;
+use Envariable\Helpers\ServerInterfaceHelper;
 
 /**
  * Detect and Define the Environment.
@@ -20,9 +21,14 @@ class Environment
     private $configMap;
 
     /**
-     * @var \Envariable\Util\ServerInterfaceHelper
+     * @var \Envariable\Helpers\ServerInterfaceHelper
      */
-    private $serverAPIHelper;
+    private $serverInterfaceHelper;
+
+    /**
+     * @var \Envariable\Helpers\EnvironmentHelper
+     */
+    private $environmentHelper;
 
     /**
      * @param array $configMap
@@ -35,7 +41,7 @@ class Environment
     /**
      * Define the Server Interface Helper
      *
-     * @param \Envariable\Util\ServerInterfaceHelper $serverInterfaceHelper
+     * @param \Envariable\Helpers\ServerInterfaceHelper $serverInterfaceHelper
      */
     public function setServerInterfaceHelper(ServerInterfaceHelper $serverInterfaceHelper)
     {
@@ -43,50 +49,66 @@ class Environment
     }
 
     /**
+     * Define the Environment Helper
+     *
+     * @param \Envariable\Helpers\EnvironmentHelper $environmentHelper
+     */
+    public function setEnvironmentHelper(EnvironmentHelper $environmentHelper)
+    {
+        $this->environmentHelper = $environmentHelper;
+    }
+
+    /**
      * Detect the environment and define the ENVIRONMENT constant.
      *
-     * @return void
+     * @throws \Exception
      */
     public function detect()
     {
         if ($this->serverInterfaceHelper->getType() === 'cli') {
-            define('ENVIRONMENT', $this->configMap['cliDefaultEnvironment']);
+            $this->environmentHelper->defineEnvironment($this->configMap['cliDefaultEnvironment']);
+            $this->environmentHelper->verifyEnvironment();
 
             return;
         }
 
-        if (count($this->configMap['environmentToHostMap']) === 0) {
-            throw new \Exception('You have not defined any hosts within the "environmentToHostMap" array within Envariable config.');
+        if (empty($this->configMap['environmentToHostnameMap'])) {
+            throw new \Exception('You have not defined any hostnames within the "environmentToHostnameMap" array within Envariable config.');
         }
 
-        foreach ($this->configMap['environmentToHostMap'] as $environment => $host) {
-            if ( ! $this->isHostValid($host)) {
-                continue;
-            }
+try {
+        $result = array_filter($this->configMap['environmentToHostnameMap'], array($this, 'isValidHostname'));
+}catch (\Exception $e) {
+    error_log($e->getMessage());
+}
+//error_log(var_export($result, 1));
 
-            define('ENVIRONMENT', $environment);
+        if ( ! empty($result)) {
+            $this->environmentHelper->defineEnvironment(key($result));
         }
 
-        if ( ! defined('ENVIRONMENT')) {
-            throw new \Exception('Could not detect the environment.');
-        }
+        $this->environmentHelper->verifyEnvironment();
     }
 
     /**
-     * Validate the host agains the server name.
+     * Validate hostname and, if $hostname is an array, validate subdomain as well.
      *
-     * @param sting $host
+     * @param string|array $hostname
+     *
+     * @return boolean
      */
-    private function isHostValid($host)
+    private function isValidHostname($hostname)
     {
-        if ( ! isset($_SERVER['SERVER_NAME'])) {
-            throw new \Exception('Server name is not defined.');
+        if (is_array($hostname)) {
+            $validHostname = $this->environmentHelper->getHostname() === $hostname['hostname'];
+
+            return $validHostname && (strpos($_SERVER['SERVER_NAME'], $hostname['subdomain']) === 0);
         }
 
-        if ($_SERVER['SERVER_NAME'] !== $host) {
-            return false;
+        if ($this->environmentHelper->getHostname() === $hostname) {
+            return true;
         }
 
-        return true;
+        return false;
     }
 }

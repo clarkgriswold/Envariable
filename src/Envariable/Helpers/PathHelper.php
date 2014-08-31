@@ -3,7 +3,7 @@
  * @copyright 2014
  */
 
-namespace Envariable\Util;
+namespace Envariable\Helpers;
 
 /**
  * Path Helper
@@ -19,7 +19,7 @@ class PathHelper
 
     public function __construct()
     {
-        $backtrace                 = debug_backtrace();
+        $backtrace                 = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
         $backtrace                 = end($backtrace);
         $this->applicationRootPath = substr($backtrace['file'], 0, strrpos($backtrace['file'], '/'));
     }
@@ -41,9 +41,9 @@ class PathHelper
      */
     public function determineApplicationConfigFolderPath()
     {
-        $fileAndFolderList = scandir($this->applicationRootPath);
+        $rootDirectoryContentList = scandir($this->applicationRootPath);
 
-        foreach ($fileAndFolderList as $element) {
+        foreach ($rootDirectoryContentList as $element) {
             if (strpos($element, '.') === 0) {
                 continue;
             }

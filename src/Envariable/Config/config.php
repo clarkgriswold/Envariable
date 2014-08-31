@@ -2,12 +2,14 @@
 
 return array(
 
-    // Array of all hosts your application will use mapped
-    // to their respective environment names.
-    'environmentToHostMap' => array(
+    // An array of environments mapped to their respective
+    // machine names (hostnames). See the README for further details.
+    // @see http://php.net/manual/en/function.gethostname.php
+    'environmentToHostnameMap' => array(
         // Examples:
-        // 'production' => 'example.com',
-        // 'testing'    => 'test.example.com',
+        // 'production' => 'your-production-machine-name',
+        // 'testing'    => 'your-testing-machine-name',
+        // 'local'      => 'YourName-MacBook-Pro.local',
     ),
 
     // The default environment with CLI. You may wish to change

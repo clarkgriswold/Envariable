@@ -1,0 +1,6 @@
+suites:
+    envariable_suite:
+        namespace: Envariable
+        src_path:  src/Envariable
+        spec_path: src/Envariable
+        psr4_prefix: Envariable

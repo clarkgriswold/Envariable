@@ -3,7 +3,7 @@
  * @copyright 2014
  */
 
-namespace Envariable\Util;
+namespace Envariable\Helpers;
 
 /**
  * Server API Helper Class

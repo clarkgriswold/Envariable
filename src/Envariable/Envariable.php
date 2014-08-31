@@ -5,7 +5,7 @@
 
 namespace Envariable;
 
-use Envariable\Util\PathHelper;
+use Envariable\Helpers\PathHelper;
 
 /**
  * Put Custom Environment Settings Into the Environment Store.
@@ -20,8 +20,8 @@ class Envariable
     private $customEnvironmentConfigMap;
 
     /**
-     * @param array                       $config
-     * @param \Envariable\Util\PathHelper $pathHelper
+     * @param array                          $config
+     * @param \Envariable\Helpers\PathHelper $pathHelper
      */
     public function __construct(array $config, PathHelper $pathHelper = null)
     {

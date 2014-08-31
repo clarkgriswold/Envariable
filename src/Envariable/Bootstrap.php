@@ -7,8 +7,9 @@ namespace Envariable;
 
 use Envariable\Envariable;
 use Envariable\Environment;
-use Envariable\Util\PathHelper;
-use Envariable\Util\ServerInterfaceHelper;
+use Envariable\Helpers\EnvironmentHelper;
+use Envariable\Helpers\PathHelper;
+use Envariable\Helpers\ServerInterfaceHelper;
 
 /**
  * Bootstrap Envariable
@@ -18,14 +19,16 @@ use Envariable\Util\ServerInterfaceHelper;
 class Bootstrap
 {
     /**
-     * @param \Envariable\Envariable|null                 $envariable
-     * @param \Envariable\Environment|null                $environment
-     * @param \Envariable\Util\PathHelper|null            $pathHelper
-     * @param \Envariable\Util\ServerinterfaceHelper|null $serverInterfaceHelper
+     * @param \Envariable\Envariable|null                    $envariable
+     * @param \Envariable\Environment|null                   $environment
+     * @param \Envariable\Helpers\EnvironmentHelper|null     $environmentHelper
+     * @param \Envariable\Helpers\PathHelper|null            $pathHelper
+     * @param \Envariable\Helpers\ServerinterfaceHelper|null $serverInterfaceHelper
      */
     public function __construct(
         Envariable $envariable = null,
         Environment $environment = null,
+        EnvironmentHelper $environmentHelper = null,
         PathHelper $pathHelper = null,
         ServerInterfaceHelper $serverInterfaceHelper = null
     ) {
@@ -47,8 +50,10 @@ class Bootstrap
 
         $serverInterfaceHelper = $serverInterfaceHelper ?: new ServerInterfaceHelper();
         $environment           = $environment ?: new Environment($configMap);
+        $environmentHelper     = $environmentHelper ?: new EnvironmentHelper();
 
         $environment->setServerInterfaceHelper($serverInterfaceHelper);
+        $environment->setEnvironment($environmentHelper);
         $environment->detect();
 
         $envariable = $envariable ?: new Envariable($configMap);
