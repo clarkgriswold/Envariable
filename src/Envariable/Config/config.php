@@ -33,4 +33,4 @@ return array(
     // NOTE: Trailing slash is unnecessary, but you can use it if you wish.
     'customEnvironmentConfigPath' => null,
 
-)
+);
