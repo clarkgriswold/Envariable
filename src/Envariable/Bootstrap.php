@@ -49,11 +49,12 @@ class Bootstrap
         $configMap = require($configFilePath);
 
         $serverInterfaceHelper = $serverInterfaceHelper ?: new ServerInterfaceHelper();
-        $environment           = $environment ?: new Environment($configMap);
+        $environment           = $environment ?: new Environment();
         $environmentHelper     = $environmentHelper ?: new EnvironmentHelper();
 
+        $environment->setConfiguration($configMap);
         $environment->setServerInterfaceHelper($serverInterfaceHelper);
-        $environment->setEnvironment($environmentHelper);
+        $environment->setEnvironmentHelper($environmentHelper);
         $environment->detect();
 
         $envariable = $envariable ?: new Envariable($configMap);

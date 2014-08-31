@@ -40,7 +40,6 @@ class EnvironmentSpec extends ObjectBehavior
      */
     function let()
     {
-        $this->beConstructedWith(self::$configMap);
         $this->shouldHaveType('Envariable\Environment');
     }
 
@@ -72,6 +71,7 @@ class EnvironmentSpec extends ObjectBehavior
             ->verifyEnvironment()
             ->shouldBeCalled();
 
+        $this->setConfiguration(self::$configMap);
         $this->setServerInterfaceHelper($serverInterfaceHelper);
         $this->setEnvironmentHelper($environmentHelper);
 
@@ -106,6 +106,7 @@ class EnvironmentSpec extends ObjectBehavior
             ->verifyEnvironment()
             ->shouldBeCalled();
 
+        $this->setConfiguration(self::$configMap);
         $this->setServerInterfaceHelper($serverInterfaceHelper);
         $this->setEnvironmentHelper($environmentHelper);
 
@@ -140,6 +141,7 @@ class EnvironmentSpec extends ObjectBehavior
             ->verifyEnvironment()
             ->shouldBeCalled();
 
+        $this->setConfiguration(self::$configMap);
         $this->setServerInterfaceHelper($serverInterfaceHelper);
         $this->setEnvironmentHelper($environmentHelper);
 
@@ -174,9 +176,68 @@ class EnvironmentSpec extends ObjectBehavior
             ->verifyEnvironment()
             ->shouldBeCalled();
 
+        $this->setConfiguration(self::$configMap);
         $this->setServerInterfaceHelper($serverInterfaceHelper);
         $this->setEnvironmentHelper($environmentHelper);
 
         $this->shouldNotThrow('\Exception')->duringDetect();
+    }
+
+    /**
+     * Test that exception is thrown as the environmentToHostnameMap is empty.
+     *
+     * @param \Envariable\Helpers\ServerInterfaceHelper $serverInterfaceHelper
+     */
+    function it_throws_exception_as_environment_to_hostname_map_is_empty(ServerInterfaceHelper $serverInterfaceHelper)
+    {
+        $serverInterfaceHelper
+            ->getType()
+            ->willReturn('apache2handler');
+
+        $this->setConfiguration(array(
+            'environmentToHostnameMap' => array(),
+        ));
+        $this->setServerInterfaceHelper($serverInterfaceHelper);
+
+        $this->shouldThrow(new \Exception('You have not defined any hostnames within the "environmentToHostnameMap" array within Envariable config.'))->duringDetect();
+    }
+
+    /**
+     * Test that exception is thrown as there is no hostname match and the environment is not defined.
+     *
+     * @param \Envariable\Helpers\ServerInterfaceHelper $serverInterfaceHelper
+     * @param \Envariable\Helpers\EnvironmentHelper     $environmentHelper
+     */
+    function it_throws_exception_as_no_hostname_match_and_environment_not_defined(
+        ServerInterfaceHelper $serverInterfaceHelper,
+        EnvironmentHelper $environmentHelper
+    ) {
+        $exception = new \Exception('Could not detect the environment.');
+
+        $serverInterfaceHelper
+            ->getType()
+            ->willReturn('apache2handler');
+
+        $environmentHelper
+            ->getHostname()
+            ->willReturn(self::$configMap['environmentToHostnameMap']['production-without-subdomain']);
+
+        $environmentHelper
+            ->defineEnvironment()
+            ->shouldNotBeCalled();
+
+        $environmentHelper
+            ->verifyEnvironment()
+            ->willThrow($exception);
+
+        $this->setConfiguration(array(
+            'environmentToHostnameMap' => array(
+                'production-without-subdomain' => 'this-will-not-match',
+            ),
+        ));
+        $this->setServerInterfaceHelper($serverInterfaceHelper);
+        $this->setEnvironmentHelper($environmentHelper);
+
+        $this->shouldThrow($exception)->duringDetect();
     }
 }

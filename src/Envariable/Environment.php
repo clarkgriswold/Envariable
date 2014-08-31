@@ -31,9 +31,11 @@ class Environment
     private $environmentHelper;
 
     /**
+     * Define the configuration.
+     *
      * @param array $configMap
      */
-    public function __construct(array $configMap)
+    public function setConfiguration(array $configMap)
     {
         $this->configMap = $configMap;
     }
@@ -76,12 +78,7 @@ class Environment
             throw new \Exception('You have not defined any hostnames within the "environmentToHostnameMap" array within Envariable config.');
         }
 
-try {
         $result = array_filter($this->configMap['environmentToHostnameMap'], array($this, 'isValidHostname'));
-}catch (\Exception $e) {
-    error_log($e->getMessage());
-}
-//error_log(var_export($result, 1));
 
         if ( ! empty($result)) {
             $this->environmentHelper->defineEnvironment(key($result));
