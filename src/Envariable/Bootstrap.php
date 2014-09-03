@@ -10,9 +10,10 @@ use Envariable\Environment;
 use Envariable\Helpers\EnvironmentHelper;
 use Envariable\Helpers\PathHelper;
 use Envariable\Helpers\ServerInterfaceHelper;
+use Envariable\Util\FileSystem;
 
 /**
- * Bootstrap Envariable
+ * Bootstrap Envariable.
  *
  * @author Mark Kasaboski <mark.kasaboski@gmail.com>
  */
@@ -57,7 +58,10 @@ class Bootstrap
         $environment->setEnvironmentHelper($environmentHelper);
         $environment->detect();
 
-        $envariable = $envariable ?: new Envariable($configMap);
+        $envariable = $envariable ?: new Envariable();
+        $envariable->setConfiguration($configMap);
+        $envariable->setPathHelper($pathHelper);
+        $envariable->setEnvironment(ENVIRONMENT);
         $envariable->putEnv();
     }
 

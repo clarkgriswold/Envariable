@@ -17,24 +17,46 @@ class Envariable
     /**
      * @var array
      */
-    private $customEnvironmentConfigMap;
+    private $config;
 
     /**
-     * @param array                          $config
+     * @var string
+     */
+    private $environment;
+
+    /**
+     * @var \Envariable\Helpers\PathHelper
+     */
+    private $pathHelper;
+
+    /**
+     * Define the configuration.
+     *
+     * @param array $config
+     */
+    public function setConfiguration(array $config)
+    {
+        $this->config = $config;
+    }
+
+    /**
+     * Define environment.
+     *
+     * @param string $environment
+     */
+    public function setEnvironment($environment)
+    {
+        $this->environment = $environment;
+    }
+
+    /**
+     * Define the Path Helper
+     *
      * @param \Envariable\Helpers\PathHelper $pathHelper
      */
-    public function __construct(array $config, PathHelper $pathHelper = null)
+    public function setPathHelper(PathHelper $pathHelper)
     {
-        $pathHelper                      = $pathHelper ?: new PathHelper();
-        $applicationRootPath             = $pathHelper->getApplicationRootPath();
-        $customEnvironmentConfigFilePath = sprintf('%s/.env.%s.php', $applicationRootPath, ENVIRONMENT);
-
-        if ($config['customEnvironmentConfigPath'] !== null) {
-            $customEnvironmentConfigPath     = rtrim($config['customEnvironmentConfigPath'], '/') . '/';
-            $customEnvironmentConfigFilePath = sprintf('%s/%s.env.%s.php', $applicationRootPath, $customEnvironmentConfigPath, ENVIRONMENT);
-        }
-
-        $this->customEnvironmentConfigMap = require($customEnvironmentConfigFilePath);
+        $this->pathHelper = $pathHelper;
     }
 
     /**
@@ -43,7 +65,19 @@ class Envariable
      */
     public function putEnv()
     {
-        $this->execute($this->customEnvironmentConfigMap);
+        $applicationRootPath             = $this->pathHelper->getApplicationRootPath();
+        $customEnvironmentConfigFilePath = sprintf('%s/.env.%s.php', $applicationRootPath, $this->environment);
+
+        if ($this->config['customEnvironmentConfigPath'] !== null) {
+            $customEnvironmentConfigPath     = rtrim($this->config['customEnvironmentConfigPath'], '/') . '/';
+            $customEnvironmentConfigFilePath = sprintf('%s/%s.env.%s.php', $applicationRootPath, $customEnvironmentConfigPath, $this->environment);
+        }
+
+        if ( ! file_exists($customEnvironmentConfigFilePath)) {
+            throw new \Exception("Could not find configuration file: [$customEnvironmentConfigFilePath]");
+        }
+
+        $this->execute(require($customEnvironmentConfigFilePath));
     }
 
     /**
@@ -59,20 +93,28 @@ class Envariable
             throw new \RuntimeException('Your custom environment config is empty.');
         }
 
-        foreach ($configMap as $key => $value) {
-            if (is_array($value)) {
-                if ($prefix !== null) {
-                    $key = sprintf('%s_%s', $prefix, $key);
-                }
+        array_walk($configMap, array($this, 'processConfigCallback'), $prefix);
+    }
 
-                $this->execute($value, $key);
+    /**
+     * Process configuration entry and define as an environment variable.
+     *
+     * @param string|array $value
+     * @param string       $key
+     * @param string|null  $prefix
+     */
+    private function processConfigCallback($value, $key, $prefix = null)
+    {
+        if (is_array($value)) {
+            $key = $prefix ? sprintf('%s_%s', $prefix, $key) : $key;
 
-                continue;
-            }
+            $this->execute($value, $key);
 
-            $this->defineWithinENVSuperGlobal($prefix, $key, $value);
-            $this->defineWithinEnvironmentStore($prefix, $key, $value);
+            return;
         }
+
+        $this->defineWithinENVSuperGlobal($prefix, $key, $value);
+        $this->defineWithinEnvironmentStore($prefix, $key, $value);
     }
 
     /**
@@ -87,7 +129,7 @@ class Envariable
         $key = sprintf('%s_%s', strtoupper($prefix), strtoupper($key));
 
         if (array_key_exists($key, $_ENV)) {
-            throw new \Exception('Array key "' . $key . '" already exists. Aborting.');
+            throw new \Exception('An environment variable with the key "' . $key . '" already exists. Aborting.');
         }
 
         $_ENV[$key] = $value;

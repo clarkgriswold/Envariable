@@ -36,9 +36,9 @@ class EnvironmentSpec extends ObjectBehavior
     );
 
     /**
-     * Pre-test setup
+     * Test if Environment is initializable
      */
-    function let()
+    function it_is_initializable()
     {
         $this->shouldHaveType('Envariable\Environment');
     }
