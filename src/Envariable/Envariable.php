@@ -5,7 +5,7 @@
 
 namespace Envariable;
 
-use Envariable\Helpers\PathHelper;
+use Envariable\Util\FileSystemUtil;
 
 /**
  * Put Custom Environment Settings Into the Environment Store.
@@ -25,9 +25,9 @@ class Envariable
     private $environment;
 
     /**
-     * @var \Envariable\Helpers\PathHelper
+     * @var \Envariable\Util\FileSystemUtil
      */
-    private $pathHelper;
+    private $fileSystemUtil;
 
     /**
      * Define the configuration.
@@ -50,13 +50,13 @@ class Envariable
     }
 
     /**
-     * Define the Path Helper
+     * Define the File System Utility.
      *
-     * @param \Envariable\Helpers\PathHelper $pathHelper
+     * @param \Envariable\Util\FileSystemUtil $fileSystemUtil
      */
-    public function setPathHelper(PathHelper $pathHelper)
+    public function setFileSystemUtil(FileSystemUtil $fileSystemUtil)
     {
-        $this->pathHelper = $pathHelper;
+        $this->fileSystemUtil = $fileSystemUtil;
     }
 
     /**
@@ -65,7 +65,7 @@ class Envariable
      */
     public function putEnv()
     {
-        $applicationRootPath             = $this->pathHelper->getApplicationRootPath();
+        $applicationRootPath             = $this->fileSystemUtil->getApplicationRootPath();
         $customEnvironmentConfigFilePath = sprintf('%s/.env.%s.php', $applicationRootPath, $this->environment);
 
         if ($this->config['customEnvironmentConfigPath'] !== null) {

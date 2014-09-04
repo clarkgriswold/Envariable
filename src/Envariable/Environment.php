@@ -5,8 +5,7 @@
 
 namespace Envariable;
 
-use Envariable\Helpers\EnvironmentHelper;
-use Envariable\Helpers\ServerInterfaceHelper;
+use Envariable\Util\ServerUtil;
 
 /**
  * Detect and Define the Environment.
@@ -21,14 +20,9 @@ class Environment
     private $configMap;
 
     /**
-     * @var \Envariable\Helpers\ServerInterfaceHelper
+     * @var \Envariable\Util\ServerUtil
      */
-    private $serverInterfaceHelper;
-
-    /**
-     * @var \Envariable\Helpers\EnvironmentHelper
-     */
-    private $environmentHelper;
+    private $serverUtil;
 
     /**
      * Define the configuration.
@@ -41,23 +35,13 @@ class Environment
     }
 
     /**
-     * Define the Server Interface Helper
+     * Define the Server Utility.
      *
-     * @param \Envariable\Helpers\ServerInterfaceHelper $serverInterfaceHelper
+     * @param \Envariable\Util\ServerUtil $serverUtil
      */
-    public function setServerInterfaceHelper(ServerInterfaceHelper $serverInterfaceHelper)
+    public function setServerUtil(ServerUtil $serverUtil)
     {
-        $this->serverInterfaceHelper = $serverInterfaceHelper;
-    }
-
-    /**
-     * Define the Environment Helper
-     *
-     * @param \Envariable\Helpers\EnvironmentHelper $environmentHelper
-     */
-    public function setEnvironmentHelper(EnvironmentHelper $environmentHelper)
-    {
-        $this->environmentHelper = $environmentHelper;
+        $this->serverUtil = $serverUtil;
     }
 
     /**
@@ -67,9 +51,9 @@ class Environment
      */
     public function detect()
     {
-        if ($this->serverInterfaceHelper->getType() === 'cli') {
-            $this->environmentHelper->defineEnvironment($this->configMap['cliDefaultEnvironment']);
-            $this->environmentHelper->verifyEnvironment();
+        if ($this->serverUtil->getInterfaceType() === 'cli') {
+            $this->environmentUtil->defineEnvironment($this->configMap['cliDefaultEnvironment']);
+            $this->environmentUtil->verifyEnvironment();
 
             return;
         }
@@ -80,11 +64,11 @@ class Environment
 
         $result = array_filter($this->configMap['environmentToHostnameMap'], array($this, 'isValidHostname'));
 
-        if ( ! empty($result)) {
-            $this->environmentHelper->defineEnvironment(key($result));
+        if (empty($result)) {
+            throw new \Exception('Could not detect the environment.');
         }
 
-        $this->environmentHelper->verifyEnvironment();
+        return key($result);
     }
 
     /**
@@ -97,12 +81,12 @@ class Environment
     private function isValidHostname($hostname)
     {
         if (is_array($hostname)) {
-            $validHostname = $this->environmentHelper->getHostname() === $hostname['hostname'];
+            $validHostname = $this->serverUtil->getHostname() === $hostname['hostname'];
 
             return $validHostname && (strpos($_SERVER['SERVER_NAME'], $hostname['subdomain']) === 0);
         }
 
-        if ($this->environmentHelper->getHostname() === $hostname) {
+        if ($this->serverUtil->getHostname() === $hostname) {
             return true;
         }
 

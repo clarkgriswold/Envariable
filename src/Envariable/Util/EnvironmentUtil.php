@@ -3,12 +3,12 @@
  * @copyright 2014
  */
 
-namespace Envariable\Helpers;
+namespace Envariable\Util;
 
 /**
  * Helper Class To Define and Varify the ENVIRONMENT constant.
  */
-class EnvironmentHelper
+class EnvironmentUtil
 {
     /**
      * Define the ENVIRONMENT constant.
