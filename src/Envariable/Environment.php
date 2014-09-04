@@ -51,15 +51,16 @@ class Environment
      */
     public function detect()
     {
-        if ($this->serverUtil->getInterfaceType() === 'cli') {
-            $this->environmentUtil->defineEnvironment($this->configMap['cliDefaultEnvironment']);
-            $this->environmentUtil->verifyEnvironment();
-
-            return;
+        if (empty($this->configMap['cliDefaultEnvironment'])) {
+            throw new \Exception('cliDefaultEnvironment must contain a value within Envariable config.');
         }
 
         if (empty($this->configMap['environmentToHostnameMap'])) {
             throw new \Exception('You have not defined any hostnames within the "environmentToHostnameMap" array within Envariable config.');
+        }
+
+        if ($this->serverUtil->getInterfaceType() === 'cli') {
+            return $this->configMap['cliDefaultEnvironment'];
         }
 
         $result = array_filter($this->configMap['environmentToHostnameMap'], array($this, 'isValidHostname'));

@@ -47,7 +47,7 @@ class EnvironmentSpec extends ObjectBehavior
      *
      * @param \Envariable\Util\ServerUtil $serverUtil
      */
-    function detect_returns_production_without_subdomain_matching(ServerUtil $serverUtil)
+    function it_will_return_production_without_subdomain_matching(ServerUtil $serverUtil)
     {
         $_SERVER['SERVER_NAME'] = 'www.example.com';
 
@@ -70,7 +70,7 @@ class EnvironmentSpec extends ObjectBehavior
      *
      * @param \Envariable\Util\ServerUtil $serverUtil
      */
-    function detect_returns_production_with_subdomain_matching(ServerUtil $serverUtil)
+    function it_will_return_production_with_subdomain_matching(ServerUtil $serverUtil)
     {
         $_SERVER['SERVER_NAME'] = 'www.example.com';
 
@@ -93,7 +93,7 @@ class EnvironmentSpec extends ObjectBehavior
      *
      * @param \Envariable\Util\ServerUtil $serverUtil
      */
-    function detect_returns_testing_with_subdomain_matching(ServerUtil $serverUtil)
+    function it_will_return_testing_with_subdomain_matching(ServerUtil $serverUtil)
     {
         $_SERVER['SERVER_NAME'] = 'testing.example.com';
 
@@ -116,7 +116,7 @@ class EnvironmentSpec extends ObjectBehavior
      *
      * @param \Envariable\Util\ServerUtil $serverUtil
      */
-    function detect_returns_production_in_cli_mode(ServerUtil $serverUtil)
+    function it_will_return_production_in_cli_mode(ServerUtil $serverUtil)
     {
         $_SERVER['SERVER_NAME'] = 'testing.example.com';
 
@@ -135,6 +135,25 @@ class EnvironmentSpec extends ObjectBehavior
     }
 
     /**
+     * Test that exception is thrown as the cliDefaultEnvironment config option is empty.
+     *
+     * @param \Envariable\Util\ServerUtil $serverUtil
+     */
+    function it_throws_exception_as_cli_default_environment_is_empty(ServerUtil $serverUtil)
+    {
+        $serverUtil
+            ->getInterfaceType()
+            ->willReturn('apache2handler');
+
+        $this->setConfiguration(array(
+            'cliDefaultEnvironment' => '',
+        ));
+        $this->setServerUtil($serverUtil);
+
+        $this->shouldThrow(new \Exception('cliDefaultEnvironment must contain a value within Envariable config.'))->duringDetect();
+    }
+
+    /**
      * Test that exception is thrown as the environmentToHostnameMap is empty.
      *
      * @param \Envariable\Util\ServerUtil $serverUtil
@@ -147,6 +166,7 @@ class EnvironmentSpec extends ObjectBehavior
 
         $this->setConfiguration(array(
             'environmentToHostnameMap' => array(),
+            'cliDefaultEnvironment'    => 'production',
         ));
         $this->setServerUtil($serverUtil);
 
@@ -172,6 +192,7 @@ class EnvironmentSpec extends ObjectBehavior
             'environmentToHostnameMap' => array(
                 'production-without-subdomain' => 'this-will-not-match',
             ),
+            'cliDefaultEnvironment'    => 'production',
         ));
         $this->setServerUtil($serverUtil);
 
