@@ -65,7 +65,7 @@ class Environment
         }
 
         if ($this->serverUtil->getInterfaceType() === 'cli') {
-            return $this->configMap['cliDefaultEnvironment'];
+            $this->environment = $this->configMap['cliDefaultEnvironment'];
         }
 
         $result = array_filter($this->configMap['environmentToHostnameMap'], array($this, 'isValidHostname'));
