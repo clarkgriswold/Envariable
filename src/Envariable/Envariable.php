@@ -5,24 +5,32 @@
 
 namespace Envariable;
 
+use Envariable\ConfigurationProcessor;
+use Envariable\Environment;
+use Envariable\Util\ServerUtil;
 use Envariable\Util\FileSystemUtil;
 
 /**
- * Put Custom Environment Settings Into the Environment Store.
+ * Envariable Bootstrapper.
  *
  * @author Mark Kasaboski <mark.kasaboski@gmail.com>
  */
 class Envariable
 {
     /**
-     * @var array
+     * @var \Envariable\ConfigurationProcessor
      */
-    private $config;
+    private $ConfigurationProcessor;
 
     /**
-     * @var string
+     * @var \Envariable\Environment
      */
     private $environment;
+
+    /**
+     * @var \Envariable\Util\ServerUtil
+     */
+    private $serverUtil;
 
     /**
      * @var \Envariable\Util\FileSystemUtil
@@ -30,128 +38,85 @@ class Envariable
     private $fileSystemUtil;
 
     /**
-     * Define the configuration.
-     *
-     * @param array $config
+     * @param \Envariable\ConfigurationProcessor|null $ConfigurationProcessor
+     * @param \Envariable\Environment|null            $environment
+     * @param \Envariable\Util\ServerUtil|null        $serverUtil
+     * @param \Envariable\Util\FileSystemUtil|null    $fileSystemUtil
      */
-    public function setConfiguration(array $config)
-    {
-        $this->config = $config;
+    public function __construct(
+        Envariable $ConfigurationProcessor = null,
+        Environment $environment = null,
+        ServerUtil $serverUtil = null,
+        FileSystemUtil $fileSystemUtil = null
+    ) {
+        $this->serverUtil             = $serverUtil ?: new ServerUtil();
+        $this->environment            = $environment ?: new Environment();
+        $this->ConfigurationProcessor = $ConfigurationProcessor ?: new ConfigurationProcessor();
+        $this->fileSystemUtil         = $fileSystemUtil ?: new FileSystemUtil();
+
+        $this->run();
     }
 
     /**
-     * Define environment.
-     *
-     * @param string $environment
+     * Run Envariable.
      */
-    public function setEnvironment($environment)
+    private function run()
     {
-        $this->environment = $environment;
-    }
+        $applicationRootPath         = $this->fileSystemUtil->getApplicationRootPath();
+        $applicationConfigFolderPath = sprintf('%s%sapplication%sconfig', $applicationRootPath, DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR);
 
-    /**
-     * Define the File System Utility.
-     *
-     * @param \Envariable\Util\FileSystemUtil $fileSystemUtil
-     */
-    public function setFileSystemUtil(FileSystemUtil $fileSystemUtil)
-    {
-        $this->fileSystemUtil = $fileSystemUtil;
-    }
-
-    /**
-     * Execute the process of iterating over the custom config and
-     * storing the data within environment variables.
-     */
-    public function putEnv()
-    {
-        $applicationRootPath             = $this->fileSystemUtil->getApplicationRootPath();
-        $customEnvironmentConfigFilePath = sprintf('%s/.env.%s.php', $applicationRootPath, $this->environment);
-
-        if ($this->config['customEnvironmentConfigPath'] !== null) {
-            $customEnvironmentConfigPath     = rtrim($this->config['customEnvironmentConfigPath'], '/') . '/';
-            $customEnvironmentConfigFilePath = sprintf('%s/%s.env.%s.php', $applicationRootPath, $customEnvironmentConfigPath, $this->environment);
+        if ( ! file_exists($applicationConfigFolderPath)) {
+            $applicationConfigFolderPath = $this->fileSystemUtil->determineApplicationConfigFolderPath($applicationRootPath);
         }
 
-        if ( ! file_exists($customEnvironmentConfigFilePath)) {
-            throw new \Exception("Could not find configuration file: [$customEnvironmentConfigFilePath]");
+        $configFilePath = sprintf('%s%sEnvariable%sconfig.php', $applicationConfigFolderPath, DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR);
+
+        if ( ! file_exists($configFilePath)) {
+            $configTemplateFilePath = __DIR__ . '/Config/config.php';
+
+            $this->fileSystemUtil->createConfigFile($configTemplateFilePath, applicationConfigFolderPath);
         }
 
-        $this->execute(require($customEnvironmentConfigFilePath));
+        $configMap = $this->fileSystemUtil->getConfigFile($configFilePath);
+
+        $this->configureAndInovkeEnvironment($configMap);
+        $this->configureAndInovkeEnvariable($configMap);
     }
 
     /**
-     * Recurse over the application's custom environment config array
-     * and store the settings within the environment variable store.
+     * Conigure Environment and run it.
      *
-     * @param array       $configMap
-     * @param string|null $prefix
+     * @param array $configMap
      */
-    private function execute(array $configMap, $prefix = null)
+    private function configureAndInovkeEnvironment(array $configMap)
     {
-        if (count($configMap) === 0) {
-            throw new \RuntimeException('Your custom environment config is empty.');
-        }
+        $this->environment->setConfiguration($configMap);
+        $this->environment->setServerUtil($this->serverUtil);
 
-        array_walk($configMap, array($this, 'processConfigCallback'), $prefix);
+        $this->environment->detect();
     }
 
     /**
-     * Process configuration entry and define as an environment variable.
+     * Configure Envariable and run it.
      *
-     * @param string|array $value
-     * @param string       $key
-     * @param string|null  $prefix
+     * @param array $configMap
      */
-    private function processConfigCallback($value, $key, $prefix = null)
+    private function configureAndInovkeEnvariable(array $configMap)
     {
-        if (is_array($value)) {
-            $key = $prefix ? sprintf('%s_%s', $prefix, $key) : $key;
+        $this->ConfigurationProcessor->setConfiguration($configMap);
+        $this->ConfigurationProcessor->setFileSystemUtil($this->fileSystemUtil);
+        $this->ConfigurationProcessor->setEnvironment($this->environment->getDetectedEnvironment());
 
-            $this->execute($value, $key);
-
-            return;
-        }
-
-        $this->defineWithinENVSuperGlobal($prefix, $key, $value);
-        $this->defineWithinEnvironmentStore($prefix, $key, $value);
+        $this->ConfigurationProcessor->execute();
     }
 
     /**
-     * Define the custom environment variable within the $_ENV super global array.
+     * Retrieve the Environment instance.
      *
-     * @param string $prefix
-     * @param string $key
-     * @param string $value
+     * @return \Envariable\Environment
      */
-    private function defineWithinENVSuperGlobal($prefix, $key, $value)
+    public function getEnvironment()
     {
-        $key = sprintf('%s_%s', strtoupper($prefix), strtoupper($key));
-
-        if (array_key_exists($key, $_ENV)) {
-            throw new \Exception('An environment variable with the key "' . $key . '" already exists. Aborting.');
-        }
-
-        $_ENV[$key] = $value;
-    }
-
-    /**
-     * Define the custom environment variable within the environment store.
-     *
-     * @param string $prefix
-     * @param string $key
-     * @param string $value
-     */
-    private function defineWithinEnvironmentStore($prefix, $key, $value)
-    {
-        $environmentVariableName = sprintf('%s_%s', strtoupper($prefix), strtoupper($key));
-
-        if (getenv($environmentVariableName)) {
-            throw new \Exception('An environment variable with the name "' . $environmentVariableName . '" already exists. Aborting.');
-        }
-
-        $setting = sprintf('%s=%s', $environmentVariableName, $value);
-
-        putenv($setting);
+        return $this->environment;
     }
 }

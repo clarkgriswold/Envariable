@@ -10,11 +10,11 @@ use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
 /**
- * Envariable Test.
+ * Configuration Processor Test.
  *
- * @author  Mark kasaboski <mark.kasaboski@gmail.com>
+ * @author Mark kasaboski <mark.kasaboski@gmail.com>
  */
-class EnvariableSpec extends ObjectBehavior
+class ConfigurationProcessorSpec extends ObjectBehavior
 {
     /**
      * {@inheritdoc}
@@ -35,7 +35,7 @@ class EnvariableSpec extends ObjectBehavior
      */
     function it_is_initializable()
     {
-        $this->shouldHaveType('Envariable\Envariable');
+        $this->shouldHaveType('Envariable\ConfigurationProcessor');
     }
 
     /**
@@ -57,7 +57,7 @@ class EnvariableSpec extends ObjectBehavior
         $this->setEnvironment($environment);
         $this->setFileSystemUtil($fileSystemUtil);
 
-        $this->shouldNotThrow('\Exception')->duringPutEnv();
+        $this->shouldNotThrow('\Exception')->duringExecute();
 
         $this->shouldHaveEnvironmentVariable(array('SOMEPRODUCTIONDB_HOST' => 'some-host'));
         $this->shouldHaveEnvironmentVariable(array('SOMEPRODUCTIONSERVICE_EMAIL' => 'some-email-address@example.com'));
@@ -83,7 +83,7 @@ class EnvariableSpec extends ObjectBehavior
         $this->setEnvironment($environment);
         $this->setFileSystemUtil($fileSystemUtil);
 
-        $this->shouldNotThrow('\Exception')->duringPutEnv();
+        $this->shouldNotThrow('\Exception')->duringExecute();
 
         $this->shouldHaveEnvironmentVariable(array('SOMEPRODUCTIONDBOUTSIDEROOT_HOST' => 'some-host'));
         $this->shouldHaveEnvironmentVariable(array('SOMEPRODUCTIONSERVICEOUTSIDEROOT_EMAIL' => 'some-email-address@example.com'));
@@ -108,7 +108,7 @@ class EnvariableSpec extends ObjectBehavior
         $this->setEnvironment($environment);
         $this->setFileSystemUtil($fileSystemUtil);
 
-        $this->shouldThrow(new \Exception('Could not find configuration file: [invalid_path/.env.production.php]'))->duringPutEnv();
+        $this->shouldThrow(new \Exception('Could not find configuration file: [invalid_path/.env.production.php]'))->duringExecute();
     }
 
     /**
@@ -130,7 +130,7 @@ class EnvariableSpec extends ObjectBehavior
         $this->setEnvironment($environment);
         $this->setFileSystemUtil($fileSystemUtil);
 
-        $this->shouldThrow(new \Exception('Your custom environment config is empty.'))->duringPutEnv();
+        $this->shouldThrow(new \Exception('Your custom environment config is empty.'))->duringExecute();
     }
 
     /**
@@ -153,7 +153,7 @@ class EnvariableSpec extends ObjectBehavior
         $this->setEnvironment($environment);
         $this->setFileSystemUtil($fileSystemUtil);
 
-        $this->shouldThrow(new \Exception('An environment variable with the key "SOMEENVDUPEDB_HOST" already exists. Aborting.'))->duringPutEnv();
+        $this->shouldThrow(new \Exception('An environment variable with the key "SOMEENVDUPEDB_HOST" already exists. Aborting.'))->duringExecute();
     }
 
     /**
@@ -177,6 +177,6 @@ class EnvariableSpec extends ObjectBehavior
         $this->setEnvironment($environment);
         $this->setFileSystemUtil($fileSystemUtil);
 
-        $this->shouldThrow(new \Exception('An environment variable with the name "SOMEGETENVDUPEDB_HOST" already exists. Aborting.'))->duringPutEnv();
+        $this->shouldThrow(new \Exception('An environment variable with the name "SOMEGETENVDUPEDB_HOST" already exists. Aborting.'))->duringExecute();
     }
 }

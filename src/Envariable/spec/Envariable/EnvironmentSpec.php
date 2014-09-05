@@ -43,7 +43,7 @@ class EnvironmentSpec extends ObjectBehavior
     }
 
     /**
-     * Test that detect returns 'production-without-subdomain-matching'.
+     * Test that exception not thrown and that getDetectedEnvironment returns 'production-without-subdomain-matching'.
      *
      * @param \Envariable\Util\ServerUtil $serverUtil
      */
@@ -62,11 +62,12 @@ class EnvironmentSpec extends ObjectBehavior
         $this->setConfiguration(self::$configMap);
         $this->setServerUtil($serverUtil);
 
-        $this->detect()->shouldReturn('production-without-subdomain-matching');
+        $this->shouldNotThrow('\Exception')->duringDetect();
+        $this->getDetectedEnvironment()->shouldReturn('production-without-subdomain-matching');
     }
 
     /**
-     * Test that detect returns 'production-with-subdomain-matching'.
+     * Test that exception not thrown and that getDetectedEnvironment returns 'production-with-subdomain-matching'.
      *
      * @param \Envariable\Util\ServerUtil $serverUtil
      */
@@ -85,11 +86,12 @@ class EnvironmentSpec extends ObjectBehavior
         $this->setConfiguration(self::$configMap);
         $this->setServerUtil($serverUtil);
 
-        $this->detect()->shouldReturn('production-with-subdomain-matching');
+        $this->shouldNotThrow('\Exception')->duringDetect();
+        $this->getDetectedEnvironment()->shouldReturn('production-with-subdomain-matching');
     }
 
     /**
-     * Test that detect returns 'testing-with-subdomain-matching'.
+     * Test that exception not thrown and that getDetectedEnvironment returns 'testing-with-subdomain-matching'.
      *
      * @param \Envariable\Util\ServerUtil $serverUtil
      */
@@ -108,11 +110,12 @@ class EnvironmentSpec extends ObjectBehavior
         $this->setConfiguration(self::$configMap);
         $this->setServerUtil($serverUtil);
 
-        $this->detect()->shouldReturn('testing-with-subdomain-matching');
+        $this->shouldNotThrow('\Exception')->duringDetect();
+        $this->getDetectedEnvironment()->shouldReturn('testing-with-subdomain-matching');
     }
 
     /**
-     * Test that detect returns 'production' in CLI mode.
+     * Test that exception not thrown and that getDetectedEnvironment returns 'production' in CLI mode.
      *
      * @param \Envariable\Util\ServerUtil $serverUtil
      */
@@ -131,7 +134,8 @@ class EnvironmentSpec extends ObjectBehavior
         $this->setConfiguration(self::$configMap);
         $this->setServerUtil($serverUtil);
 
-        $this->detect()->shouldReturn('production');
+        $this->shouldNotThrow('\Exception')->duringDetect();
+        $this->getDetectedEnvironment()->shouldReturn('production');
     }
 
     /**

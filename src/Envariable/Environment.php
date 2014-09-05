@@ -25,6 +25,11 @@ class Environment
     private $serverUtil;
 
     /**
+     * @var string
+     */
+    private $environment;
+
+    /**
      * Define the configuration.
      *
      * @param array $configMap
@@ -69,7 +74,17 @@ class Environment
             throw new \Exception('Could not detect the environment.');
         }
 
-        return key($result);
+        $this->environment = key($result);
+    }
+
+    /**
+     * Retrieve the detected environment.
+     *
+     * @return string
+     */
+    public function getDetectedEnvironment()
+    {
+        return $this->environment;
     }
 
     /**
