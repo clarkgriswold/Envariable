@@ -58,7 +58,7 @@ class Envariable
     /**
      * Run Envariable.
      */
-    private function execute()
+    public function execute()
     {
         $configMap = $this->getConfig();
 
