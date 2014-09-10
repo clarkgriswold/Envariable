@@ -35,7 +35,7 @@ class EnvironmentSpec extends ObjectBehavior
     );
 
     /**
-     * Test if Environment is initializable
+     * Test that the SUT is initializable.
      */
     function it_is_initializable()
     {

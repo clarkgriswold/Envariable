@@ -31,7 +31,7 @@ class ConfigurationProcessorSpec extends ObjectBehavior
     }
 
     /**
-     * Test that Envariable is initializable
+     * Test that the SUT is initializable.
      */
     function it_is_initializable()
     {
