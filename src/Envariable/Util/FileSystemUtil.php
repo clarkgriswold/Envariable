@@ -50,22 +50,38 @@ class FileSystemUtil
      */
     public function determineApplicationConfigFolderPath()
     {
-        $rootDirectoryContentList = scandir($this->applicationRootPath);
+        $ds                                  = DIRECTORY_SEPARATOR;
+        $rootDirectoryContentList            = scandir($this->applicationRootPath);
+        $this->configFolderPathTemplate      = sprintf('%s%s%s%sconfig', $this->applicationRootPath, $ds, '%s', $ds);
+        $this->controllersFolderPathTemplate = sprintf('%s%s%s%scontrollers', $this->applicationRootPath, $ds, '%s', $ds);
 
-        foreach ($rootDirectoryContentList as $element) {
-            if (strpos($element, '.') === 0) {
-                continue;
-            }
+        $resultList = array_filter($rootDirectoryContentList, array($this, 'filterRootDirectoryContentListCallback'));
 
-            $configFolderPathCandidate      = sprintf('%s/%s/config', $this->applicationRootPath, $element);
-            $controllersFolderPathCandidate = sprintf('%s/%s/controllers', $this->applicationRootPath, $element);
-
-            if (file_exists($configFolderPathCandidate) && file_exists($controllersFolderPathCandidate)) {
-                return $configFolderPathCandidate;
-            }
+        if (empty($resultList) || count($resultList) > 1) {
+            throw new \Exception('Could not determine the path to the config folder.');
         }
 
-        throw new \Exception('Could not determine the path to the config folder.');
+        return current($resultList);
+    }
+
+    /**
+     * Filter root directory content list callback.
+     *
+     * @param string $element
+     *
+     * @return boolean
+     */
+    private function filterRootDirectoryContentListCallback($element) {
+        if (strpos($element, '.') === 0) {
+            return false;
+        }
+
+        $configFolderPathCandidate      = sprintf($this->configFolderPathTemplate, $element);
+        $controllersFolderPathCandidate = sprintf($this->controllersFolderPathTemplate, $element);
+
+        if (file_exists($configFolderPathCandidate) && file_exists($controllersFolderPathCandidate)) {
+            return true;
+        }
     }
 
     /**

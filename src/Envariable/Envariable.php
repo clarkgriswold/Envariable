@@ -44,7 +44,7 @@ class Envariable
      * @param \Envariable\Util\FileSystemUtil|null    $fileSystemUtil
      */
     public function __construct(
-        Envariable $ConfigurationProcessor = null,
+        ConfigurationProcessor $ConfigurationProcessor = null,
         Environment $environment = null,
         ServerUtil $serverUtil = null,
         FileSystemUtil $fileSystemUtil = null
@@ -53,42 +53,52 @@ class Envariable
         $this->environment            = $environment ?: new Environment();
         $this->ConfigurationProcessor = $ConfigurationProcessor ?: new ConfigurationProcessor();
         $this->fileSystemUtil         = $fileSystemUtil ?: new FileSystemUtil();
-
-        $this->run();
     }
 
     /**
      * Run Envariable.
      */
-    private function run()
+    private function execute()
     {
+        $configMap = $this->getConfig();
+
+        $this->initializeAndInvokeEnvironment($configMap);
+        $this->initializeAndInvokeConfigurationProcessor($configMap);
+    }
+
+    /**
+     * Retrieve the Envariable config file. Create it from the template
+     * if it does not exist.
+     *
+     * @return array
+     */
+    private function getConfig()
+    {
+        $ds                          = DIRECTORY_SEPARATOR;
         $applicationRootPath         = $this->fileSystemUtil->getApplicationRootPath();
-        $applicationConfigFolderPath = sprintf('%s%sapplication%sconfig', $applicationRootPath, DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR);
+        $applicationConfigFolderPath = sprintf('%s%sapplication%sconfig', $applicationRootPath, $ds, $ds);
 
         if ( ! file_exists($applicationConfigFolderPath)) {
             $applicationConfigFolderPath = $this->fileSystemUtil->determineApplicationConfigFolderPath($applicationRootPath);
         }
 
-        $configFilePath = sprintf('%s%sEnvariable%sconfig.php', $applicationConfigFolderPath, DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR);
+        $configFilePath = sprintf('%s%sEnvariable%sconfig.php', $applicationConfigFolderPath, $ds, $ds);
 
         if ( ! file_exists($configFilePath)) {
-            $configTemplateFilePath = __DIR__ . '/Config/config.php';
+            $configTemplateFilePath = sprintf('%s%sConfig%sconfig.php', __DIR__, $ds, $ds);
 
-            $this->fileSystemUtil->createConfigFile($configTemplateFilePath, applicationConfigFolderPath);
+            $this->fileSystemUtil->createConfigFile($configTemplateFilePath, $applicationConfigFolderPath);
         }
 
-        $configMap = $this->fileSystemUtil->getConfigFile($configFilePath);
-
-        $this->configureAndInovkeEnvironment($configMap);
-        $this->configureAndInovkeEnvariable($configMap);
+        return $this->fileSystemUtil->getConfigFile($configFilePath);
     }
 
     /**
-     * Conigure Environment and run it.
+     * Initialize Environment and run it.
      *
      * @param array $configMap
      */
-    private function configureAndInovkeEnvironment(array $configMap)
+    private function initializeAndInvokeEnvironment(array $configMap)
     {
         $this->environment->setConfiguration($configMap);
         $this->environment->setServerUtil($this->serverUtil);
@@ -97,11 +107,11 @@ class Envariable
     }
 
     /**
-     * Configure Envariable and run it.
+     * Initialize ConfigurationProcessor and run it.
      *
      * @param array $configMap
      */
-    private function configureAndInovkeEnvariable(array $configMap)
+    private function initializeAndInvokeConfigurationProcessor(array $configMap)
     {
         $this->ConfigurationProcessor->setConfiguration($configMap);
         $this->ConfigurationProcessor->setFileSystemUtil($this->fileSystemUtil);
