@@ -1,11 +1,9 @@
 <?php
-/**
- * @copyright 2014
- */
 
 namespace Envariable;
 
-use Envariable\ConfigurationProcessor;
+use Envariable\CustomConfigProcessor;
+use Envariable\EnvariableConfigLoader;
 use Envariable\Environment;
 use Envariable\Util\ServerUtil;
 use Envariable\Util\FileSystemUtil;
@@ -18,9 +16,14 @@ use Envariable\Util\FileSystemUtil;
 class Envariable
 {
     /**
-     * @var \Envariable\ConfigurationProcessor
+     * @var \Envariable\CustomConfigProcessor
      */
-    private $ConfigurationProcessor;
+    private $customConfigProcessor;
+
+    /**
+     * @var \Envariable\EnvariableConfigLoader;
+     */
+    private $envariableConfigLoader;
 
     /**
      * @var \Envariable\Environment
@@ -38,20 +41,23 @@ class Envariable
     private $fileSystemUtil;
 
     /**
-     * @param \Envariable\ConfigurationProcessor|null $ConfigurationProcessor
+     * @param \Envariable\CustomConfigProcessor|null  $customConfigProcessor
+     * @param \Envariable\EnvariableConfigLoader|null $envariableConfigLoader
      * @param \Envariable\Environment|null            $environment
      * @param \Envariable\Util\ServerUtil|null        $serverUtil
      * @param \Envariable\Util\FileSystemUtil|null    $fileSystemUtil
      */
     public function __construct(
-        ConfigurationProcessor $ConfigurationProcessor = null,
+        CustomConfigProcessor $customConfigProcessor = null,
+        EnvariableConfigLoader $envariableConfigLoader = null,
         Environment $environment = null,
         ServerUtil $serverUtil = null,
         FileSystemUtil $fileSystemUtil = null
     ) {
-        $this->serverUtil             = $serverUtil ?: new ServerUtil();
+        $this->customConfigProcessor  = $customConfigProcessor ?: new CustomConfigProcessor();
+        $this->envariableConfigLoader = $envariableConfigLoader ?: new EnvariableConfigLoader();
         $this->environment            = $environment ?: new Environment();
-        $this->ConfigurationProcessor = $ConfigurationProcessor ?: new ConfigurationProcessor();
+        $this->serverUtil             = $serverUtil ?: new ServerUtil();
         $this->fileSystemUtil         = $fileSystemUtil ?: new FileSystemUtil();
     }
 
@@ -60,37 +66,10 @@ class Envariable
      */
     public function execute()
     {
-        $configMap = $this->getConfig();
-
+        $configMap = $this->envariableConfigLoader->loadConfigFile();
+var_export($configMap);die;
         $this->initializeAndInvokeEnvironment($configMap);
         $this->initializeAndInvokeConfigurationProcessor($configMap);
-    }
-
-    /**
-     * Retrieve the Envariable config file. Create it from the template
-     * if it does not exist.
-     *
-     * @return array
-     */
-    private function getConfig()
-    {
-        $ds                          = DIRECTORY_SEPARATOR;
-        $applicationRootPath         = $this->fileSystemUtil->getApplicationRootPath();
-        $applicationConfigFolderPath = sprintf('%s%sapplication%sconfig', $applicationRootPath, $ds, $ds);
-
-        if ( ! file_exists($applicationConfigFolderPath)) {
-            $applicationConfigFolderPath = $this->fileSystemUtil->determineApplicationConfigFolderPath($applicationRootPath);
-        }
-
-        $configFilePath = sprintf('%s%sEnvariable%sconfig.php', $applicationConfigFolderPath, $ds, $ds);
-
-        if ( ! file_exists($configFilePath)) {
-            $configTemplateFilePath = sprintf('%s%sConfig%sconfig.php', __DIR__, $ds, $ds);
-
-            $this->fileSystemUtil->createConfigFile($configTemplateFilePath, $applicationConfigFolderPath);
-        }
-
-        return $this->fileSystemUtil->getConfigFile($configFilePath);
     }
 
     /**
@@ -107,17 +86,17 @@ class Envariable
     }
 
     /**
-     * Initialize ConfigurationProcessor and run it.
+     * Initialize CustomConfigProcessor and run it.
      *
      * @param array $configMap
      */
     private function initializeAndInvokeConfigurationProcessor(array $configMap)
     {
-        $this->ConfigurationProcessor->setConfiguration($configMap);
-        $this->ConfigurationProcessor->setFileSystemUtil($this->fileSystemUtil);
-        $this->ConfigurationProcessor->setEnvironment($this->environment->getDetectedEnvironment());
+        $this->customConfigProcessor->setConfiguration($configMap);
+        $this->customConfigProcessor->setFileSystemUtil($this->fileSystemUtil);
+        $this->customConfigProcessor->setEnvironment($this->environment->getDetectedEnvironment());
 
-        $this->ConfigurationProcessor->execute();
+        $this->customConfigProcessor->execute();
     }
 
     /**

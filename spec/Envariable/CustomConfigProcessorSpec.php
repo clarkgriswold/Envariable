@@ -1,7 +1,4 @@
 <?php
-/**
- * @copyright 2014
- */
 
 namespace spec\Envariable;
 
@@ -10,11 +7,11 @@ use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
 /**
- * Configuration Processor Test.
+ * Custom Config Processor Test.
  *
  * @author Mark kasaboski <mark.kasaboski@gmail.com>
  */
-class ConfigurationProcessorSpec extends ObjectBehavior
+class CustomConfigProcessorSpec extends ObjectBehavior
 {
     /**
      * {@inheritdoc}
@@ -35,7 +32,7 @@ class ConfigurationProcessorSpec extends ObjectBehavior
      */
     function it_is_initializable()
     {
-        $this->shouldHaveType('Envariable\ConfigurationProcessor');
+        $this->shouldHaveType('Envariable\CustomConfigProcessor');
     }
 
     /**

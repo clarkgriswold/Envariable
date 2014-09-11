@@ -1,11 +1,8 @@
 <?php
-/**
- * @copyright 2014
- */
 
 namespace spec\Envariable;
 
-use Envariable\ConfigurationProcessor;
+use Envariable\CustomConfigProcessor;
 use Envariable\Environment;
 use Envariable\Util\ServerUtil;
 use Envariable\Util\FileSystemUtil;
@@ -27,18 +24,18 @@ class EnvariableSpec extends ObjectBehavior
     /**
      * Pre-test setup.
      *
-     * @param \Envariable\ConfigurationProcessor $configurationProcessor
-     * @param \Envariable\Environment            $environment
-     * @param \Envariable\Util\ServerUtil        $serverUtil
-     * @param \Envariable\Util\FileSystemUtil    $fileSystemUtil
+     * @param \Envariable\CustomConfigProcessor $customConfigProcessor
+     * @param \Envariable\Environment           $environment
+     * @param \Envariable\Util\ServerUtil       $serverUtil
+     * @param \Envariable\Util\FileSystemUtil   $fileSystemUtil
      */
     function let(
-        ConfigurationProcessor $configurationProcessor,
+        CustomConfigProcessor $customConfigProcessor,
         Environment $environment,
         ServerUtil $serverUtil,
         FileSystemUtil $fileSystemUtil
     ) {
-        $configurationProcessor->beADoubleOf('Envariable\ConfigurationProcessor');
+        $customConfigProcessor->beADoubleOf('Envariable\CustomConfigProcessor');
         $environment->beADoubleOf('Envariable\Environment');
         $serverUtil->beADoubleOf('Envariable\Util\ServerUtil');
         $fileSystemUtil->beADoubleOf('Envariable\Util\FileSystemUtil');
@@ -46,7 +43,7 @@ class EnvariableSpec extends ObjectBehavior
         $this->fileSystemUtil = $fileSystemUtil;
 
         $this->beConstructedWith(
-            $configurationProcessor,
+            $customConfigProcessor,
             $environment,
             $serverUtil,
             $this->fileSystemUtil

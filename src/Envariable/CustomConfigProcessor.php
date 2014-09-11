@@ -1,7 +1,4 @@
 <?php
-/**
- * @copyright 2014
- */
 
 namespace Envariable;
 
@@ -13,7 +10,7 @@ use Envariable\Util\FileSystemUtil;
  *
  * @author Mark Kasaboski <mark.kasaboski@gmail.com>
  */
-class ConfigurationProcessor
+class CustomConfigProcessor
 {
     /**
      * @var array

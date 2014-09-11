@@ -38,50 +38,9 @@ class FileSystemUtil
      *
      * @return array
      */
-    public function getConfigFile($configFilePath)
+    public function loadConfigFile($configFilePath)
     {
         return require($configFilePath);
-    }
-
-    /**
-     * Determine the path to the application folder.
-     *
-     * @return string
-     */
-    public function determineApplicationConfigFolderPath()
-    {
-        $ds                                  = DIRECTORY_SEPARATOR;
-        $rootDirectoryContentList            = scandir($this->applicationRootPath);
-        $this->configFolderPathTemplate      = sprintf('%s%s%s%sconfig', $this->applicationRootPath, $ds, '%s', $ds);
-        $this->controllersFolderPathTemplate = sprintf('%s%s%s%scontrollers', $this->applicationRootPath, $ds, '%s', $ds);
-
-        $resultList = array_filter($rootDirectoryContentList, array($this, 'filterRootDirectoryContentListCallback'));
-
-        if (empty($resultList) || count($resultList) > 1) {
-            throw new \Exception('Could not determine the path to the config folder.');
-        }
-
-        return current($resultList);
-    }
-
-    /**
-     * Filter root directory content list callback.
-     *
-     * @param string $element
-     *
-     * @return boolean
-     */
-    private function filterRootDirectoryContentListCallback($element) {
-        if (strpos($element, '.') === 0) {
-            return false;
-        }
-
-        $configFolderPathCandidate      = sprintf($this->configFolderPathTemplate, $element);
-        $controllersFolderPathCandidate = sprintf($this->controllersFolderPathTemplate, $element);
-
-        if (file_exists($configFolderPathCandidate) && file_exists($controllersFolderPathCandidate)) {
-            return true;
-        }
     }
 
     /**

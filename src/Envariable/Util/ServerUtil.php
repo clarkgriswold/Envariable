@@ -1,7 +1,4 @@
 <?php
-/**
- * @copyright 2014
- */
 
 namespace Envariable\Util;
 
