@@ -2,7 +2,7 @@
 
 namespace Envariable;
 
-use Envariable\Util\ServerUtil;
+use Envariable\Util\Server;
 
 /**
  * Detect and Define the Environment.
@@ -17,9 +17,9 @@ class Environment
     private $configMap;
 
     /**
-     * @var \Envariable\Util\ServerUtil
+     * @var \Envariable\Util\Server
      */
-    private $serverUtil;
+    private $server;
 
     /**
      * @var string
@@ -39,11 +39,11 @@ class Environment
     /**
      * Define the Server Utility.
      *
-     * @param \Envariable\Util\ServerUtil $serverUtil
+     * @param \Envariable\Util\Server $server
      */
-    public function setServerUtil(ServerUtil $serverUtil)
+    public function setServer(Server $server)
     {
-        $this->serverUtil = $serverUtil;
+        $this->server = $server;
     }
 
     /**
@@ -61,7 +61,7 @@ class Environment
             throw new \Exception('You have not defined any hostnames within the "environmentToHostnameMap" array within Envariable config.');
         }
 
-        if ($this->serverUtil->getInterfaceType() === 'cli') {
+        if ($this->server->getInterfaceType() === 'cli') {
             $this->environment = $this->configMap['cliDefaultEnvironment'];
 
             return;
@@ -86,12 +86,12 @@ class Environment
     private function isValidHostname($hostname)
     {
         if (is_array($hostname)) {
-            $validHostname = $this->serverUtil->getHostname() === $hostname['hostname'];
+            $validHostname = $this->server->getHostname() === $hostname['hostname'];
 
             return $validHostname && (strpos($_SERVER['SERVER_NAME'], $hostname['subdomain']) === 0);
         }
 
-        if ($this->serverUtil->getHostname() === $hostname) {
+        if ($this->server->getHostname() === $hostname) {
             return true;
         }
 

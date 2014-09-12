@@ -3,9 +3,10 @@
 namespace spec\Envariable;
 
 use Envariable\CustomConfigProcessor;
+use Envariable\EnvariableConfigLoader;
 use Envariable\Environment;
-use Envariable\Util\ServerUtil;
-use Envariable\Util\FileSystemUtil;
+use Envariable\Util\Server;
+use Envariable\Util\Filesystem;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -17,48 +18,52 @@ use Prophecy\Argument;
 class EnvariableSpec extends ObjectBehavior
 {
     /**
-     * @var \Envaraible\Util\FileSystemUtil
+     * @var \Envaraible\Util\Filesystem
      */
-    private $fileSystemUtil;
+    private $filesystem;
 
     /**
      * Pre-test setup.
      *
-     * @param \Envariable\CustomConfigProcessor $customConfigProcessor
-     * @param \Envariable\Environment           $environment
-     * @param \Envariable\Util\ServerUtil       $serverUtil
-     * @param \Envariable\Util\FileSystemUtil   $fileSystemUtil
+     * @param \Envariable\CustomConfigProcessor  $customConfigProcessor
+     * @param \Envariable\EnvariableConfigLoader $envariableConfigLoader
+     * @param \Envariable\Environment            $environment
+     * @param \Envariable\Util\Server            $server
+     * @param \Envariable\Util\Filesystem        $filesystem
      */
     function let(
         CustomConfigProcessor $customConfigProcessor,
+        EnvariableConfigLoader $envariableConfigLoader,
         Environment $environment,
-        ServerUtil $serverUtil,
-        FileSystemUtil $fileSystemUtil
+        Server $server,
+        Filesystem $filesystem
     ) {
         $customConfigProcessor->beADoubleOf('Envariable\CustomConfigProcessor');
+        $envariableConfigLoader->beADoubleOf('Envariable\EnvariableConfigLoader');
         $environment->beADoubleOf('Envariable\Environment');
-        $serverUtil->beADoubleOf('Envariable\Util\ServerUtil');
-        $fileSystemUtil->beADoubleOf('Envariable\Util\FileSystemUtil');
+        $server->beADoubleOf('Envariable\Util\Server');
+        $filesystem->beADoubleOf('Envariable\Util\Filesystem');
 
-        $this->fileSystemUtil = $fileSystemUtil;
+        $this->filesystem = $filesystem;
 
         $this->beConstructedWith(
             $customConfigProcessor,
+            $envariableConfigLoader,
             $environment,
-            $serverUtil,
-            $this->fileSystemUtil
+            $server,
+            $this->filesystem
         );
         $this->shouldHaveType('Envariable\Envariable');
     }
 
     function it_does_stuff(Environment $environment)
     {
-        //$this->fileSystemUtil->getApplicationRootPath()->willReturn('ding');
+        //$this->filesystem->getApplicationRootPath()->willReturn('ding');
         $this->getEnvironment()->shouldReturn($environment);
     }
 
     /*function it_does_other_stuff()
     {
-        $this->fileSystemUtil->getApplicationRootPath()->willReturn('dong');
+        $this->filesystem->getApplicationRootPath()->willReturn('dong');
     }*/
 }

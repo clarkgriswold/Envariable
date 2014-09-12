@@ -2,5 +2,13 @@ suites:
     envariable_suite:
         namespace: Envariable
         src_path:  src/Envariable
-        spec_path: src/Envariable
         psr4_prefix: Envariable
+extensions:
+    - PhpSpec\Extension\CodeCoverageExtension
+code_coverage:
+    blacklist:
+        - spec
+        - Util
+        - Config
+        - vendor
+

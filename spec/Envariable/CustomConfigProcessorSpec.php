@@ -2,7 +2,7 @@
 
 namespace spec\Envariable;
 
-use Envariable\Util\FileSystemUtil;
+use Envariable\Util\Filesystem;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -38,13 +38,13 @@ class CustomConfigProcessorSpec extends ObjectBehavior
     /**
      * Test that custom config data is defined as environment variables.
      *
-     * @param \Envariable\Util\FileSystemUtil $fileSystemUtil
+     * @param \Envariable\Util\Filesystem $filesystem
      */
-    function it_will_define_custom_config_as_environment_variables(FileSystemUtil $fileSystemUtil)
+    function it_will_define_custom_config_as_environment_variables(Filesystem $filesystem)
     {
         $environment = 'production';
 
-        $fileSystemUtil
+        $filesystem
             ->getApplicationRootPath()
             ->willReturn(__DIR__ . '/Config');
 
@@ -52,7 +52,7 @@ class CustomConfigProcessorSpec extends ObjectBehavior
             'customEnvironmentConfigPath' => null,
         ));
         $this->setEnvironment($environment);
-        $this->setFileSystemUtil($fileSystemUtil);
+        $this->setFilesystem($filesystem);
 
         $this->shouldNotThrow('\Exception')->duringExecute();
 
@@ -64,13 +64,13 @@ class CustomConfigProcessorSpec extends ObjectBehavior
     /**
      * Test that custom config data, located in a custom path, is defined as environment variables.
      *
-     * @param \Envariable\Util\FileSystemUtil $fileSystemUtil
+     * @param \Envariable\Util\Filesystem $filesystem
      */
-    function it_will_define_custom_config_as_environment_variables_from_a_custom_config_path(FileSystemUtil $fileSystemUtil)
+    function it_will_define_custom_config_as_environment_variables_from_a_custom_config_path(Filesystem $filesystem)
     {
         $environment = 'production';
 
-        $fileSystemUtil
+        $filesystem
             ->getApplicationRootPath()
             ->willReturn(__DIR__ . '/Config');
 
@@ -78,7 +78,7 @@ class CustomConfigProcessorSpec extends ObjectBehavior
             'customEnvironmentConfigPath' => '../../PretendOutsideRootConfig/',
         ));
         $this->setEnvironment($environment);
-        $this->setFileSystemUtil($fileSystemUtil);
+        $this->setFilesystem($filesystem);
 
         $this->shouldNotThrow('\Exception')->duringExecute();
 
@@ -89,13 +89,13 @@ class CustomConfigProcessorSpec extends ObjectBehavior
     /**
      * Test that an exception is thrown when the custom config file cannot be found.
      *
-     * @param \Envariable\Util\FileSystemUtil $fileSystemUtil
+     * @param \Envariable\Util\Filesystem $filesystem
      */
-    function it_will_throw_exception_when_custom_configuration_file_not_found(FileSystemUtil $fileSystemUtil)
+    function it_will_throw_exception_when_custom_configuration_file_not_found(Filesystem $filesystem)
     {
         $environment = 'production';
 
-        $fileSystemUtil
+        $filesystem
             ->getApplicationRootPath()
             ->willReturn('invalid_path');
 
@@ -103,7 +103,7 @@ class CustomConfigProcessorSpec extends ObjectBehavior
             'customEnvironmentConfigPath' => null,
         ));
         $this->setEnvironment($environment);
-        $this->setFileSystemUtil($fileSystemUtil);
+        $this->setFilesystem($filesystem);
 
         $this->shouldThrow(new \Exception('Could not find configuration file: [invalid_path/.env.production.php]'))->duringExecute();
     }
@@ -111,13 +111,13 @@ class CustomConfigProcessorSpec extends ObjectBehavior
     /**
      * Test that an exception is thrown when the custom config file does not contain any configuration data.
      *
-     * @param \Envariable\Util\FileSystemUtil $fileSystemUtil
+     * @param \Envariable\Util\Filesystem $filesystem
      */
-    function it_will_throw_exception_when_custom_configuration_is_empty(FileSystemUtil $fileSystemUtil)
+    function it_will_throw_exception_when_custom_configuration_is_empty(Filesystem $filesystem)
     {
         $environment = 'empty';
 
-        $fileSystemUtil
+        $filesystem
             ->getApplicationRootPath()
             ->willReturn(__DIR__ . '/Config');
 
@@ -125,7 +125,7 @@ class CustomConfigProcessorSpec extends ObjectBehavior
             'customEnvironmentConfigPath' => null,
         ));
         $this->setEnvironment($environment);
-        $this->setFileSystemUtil($fileSystemUtil);
+        $this->setFilesystem($filesystem);
 
         $this->shouldThrow(new \Exception('Your custom environment config is empty.'))->duringExecute();
     }
@@ -133,14 +133,14 @@ class CustomConfigProcessorSpec extends ObjectBehavior
     /**
      * Test that an exception is throw when key already exists within the $_ENV superglobal.
      *
-     * @param \Envariable\Util\FileSystemUtil $fileSystemUtil
+     * @param \Envariable\Util\Filesystem $filesystem
      */
-    function it_will_throw_exception_when_key_already_exists_within_env_superglobal(FileSystemUtil $fileSystemUtil)
+    function it_will_throw_exception_when_key_already_exists_within_env_superglobal(Filesystem $filesystem)
     {
         $_ENV['SOMEENVDUPEDB_HOST'] = 'Too late! I got here first.';
         $environment                = 'envdupe';
 
-        $fileSystemUtil
+        $filesystem
             ->getApplicationRootPath()
             ->willReturn(__DIR__ . '/Config');
 
@@ -148,7 +148,7 @@ class CustomConfigProcessorSpec extends ObjectBehavior
             'customEnvironmentConfigPath' => null,
         ));
         $this->setEnvironment($environment);
-        $this->setFileSystemUtil($fileSystemUtil);
+        $this->setFilesystem($filesystem);
 
         $this->shouldThrow(new \Exception('An environment variable with the key "SOMEENVDUPEDB_HOST" already exists. Aborting.'))->duringExecute();
     }
@@ -156,15 +156,15 @@ class CustomConfigProcessorSpec extends ObjectBehavior
     /**
      * Test that an exception is throw when name already exists within the environment store.
      *
-     * @param \Envariable\Util\FileSystemUtil $fileSystemUtil
+     * @param \Envariable\Util\Filesystem $filesystem
      */
-    function it_will_throw_exception_when_name_already_exists_within_getenv_environment_store(FileSystemUtil $fileSystemUtil)
+    function it_will_throw_exception_when_name_already_exists_within_getenv_environment_store(Filesystem $filesystem)
     {
         putenv('SOMEGETENVDUPEDB_HOST=Too late! I got here first.');
 
         $environment = 'getenvdupe';
 
-        $fileSystemUtil
+        $filesystem
             ->getApplicationRootPath()
             ->willReturn(__DIR__ . '/Config');
 
@@ -172,7 +172,7 @@ class CustomConfigProcessorSpec extends ObjectBehavior
             'customEnvironmentConfigPath' => null,
         ));
         $this->setEnvironment($environment);
-        $this->setFileSystemUtil($fileSystemUtil);
+        $this->setFilesystem($filesystem);
 
         $this->shouldThrow(new \Exception('An environment variable with the name "SOMEGETENVDUPEDB_HOST" already exists. Aborting.'))->duringExecute();
     }

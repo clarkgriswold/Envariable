@@ -2,7 +2,7 @@
 
 namespace Envariable;
 
-use Envariable\Util\FileSystemUtil;
+use Envariable\Util\Filesystem;
 
 /**
  * Process the custom environment config and store them within
@@ -23,9 +23,9 @@ class CustomConfigProcessor
     private $environment;
 
     /**
-     * @var \Envariable\Util\FileSystemUtil
+     * @var \Envariable\Util\Filesystem
      */
-    private $fileSystemUtil;
+    private $filesystem;
 
     /**
      * Define the configuration.
@@ -50,11 +50,11 @@ class CustomConfigProcessor
     /**
      * Define the File System Utility.
      *
-     * @param \Envariable\Util\FileSystemUtil $fileSystemUtil
+     * @param \Envariable\Util\Filesystem $filesystem
      */
-    public function setFileSystemUtil(FileSystemUtil $fileSystemUtil)
+    public function setFilesystem(Filesystem $filesystem)
     {
-        $this->fileSystemUtil = $fileSystemUtil;
+        $this->filesystem = $filesystem;
     }
 
     /**
@@ -65,7 +65,7 @@ class CustomConfigProcessor
      */
     public function execute()
     {
-        $applicationRootPath             = $this->fileSystemUtil->getApplicationRootPath();
+        $applicationRootPath             = $this->filesystem->getApplicationRootPath();
         $customEnvironmentConfigFilePath = sprintf('%s/.env.%s.php', $applicationRootPath, $this->environment);
 
         if ($this->config['customEnvironmentConfigPath'] !== null) {

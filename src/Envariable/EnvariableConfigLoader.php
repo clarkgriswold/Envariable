@@ -2,6 +2,8 @@
 
 namespace Envariable;
 
+use Envariable\Util\Filesystem;
+
 /**
  * Envariable Config Loader.
  *
@@ -10,18 +12,18 @@ namespace Envariable;
 class EnvariableConfigLoader
 {
     /**
-     * @var array
+     * @var \Envariable\Util\Filesystem
      */
-    private $frameworkCommandList;
+    private $filesystem;
 
-    public function __construct()
+    /**
+     * Define the Filesystem Utility.
+     *
+     * @param \Envariable\Util\Filesystem $filesystem
+     */
+    public function setFilesystem(Filesystem $filesystem)
     {
-        $frameworkCommandPath       = sprintf('%s%sConfig%sFrameworkCommand', __DIR__, DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR);
-        $this->frameworkCommandList = glob($frameworkCommandPath . '/*.php');
-
-        $key = array_search('FrameworkCommandInterface.php', $this->frameworkCommandList);
-
-        unset($this->frameworkCommandList[$key]);
+        $this->filesystem = $filesystem;
     }
 
     /**
@@ -32,14 +34,46 @@ class EnvariableConfigLoader
      */
     public function loadConfigFile()
     {
-        foreach ($this->frameworkCommandList as $command) {
-            $configFile = $command->loadConfigFile();
+        $frameworkCommandList = $this->getFrameworkCommandList();
 
-            if ( ! $configFile) {
+        foreach ($frameworkCommandList as $command) {
+            $configMap = $command->loadConfigFile();
+
+            if ( ! $configMap) {
                 continue;
             }
 
-            return $configFile;
+            return $configMap;
         }
+
+        throw new \Exception('Could not load Envariable config.');
+    }
+
+    private function getFrameworkCommandList()
+    {
+        $frameworkCommandList = array();
+        $frameworkCommandPath = sprintf('%s%sConfig%sFrameworkCommand', __DIR__, DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR);
+        $directoryIterator    = new \DirectoryIterator($frameworkCommandPath);
+
+        foreach ($directoryIterator as $fileInfo) {
+            if ($fileInfo->isDot()) {
+                continue;
+            }
+
+            $basename = $fileInfo->getBasename('.' . $fileInfo->getExtension());
+
+            if (strpos($basename, 'Interface') !== false) {
+                continue;
+            }
+
+            $namespace = 'Envariable\\Config\\FrameworkCommand\\' . $basename;
+
+            $command = new $namespace;
+            $command->setFilesystem($this->filesystem);
+
+            $frameworkCommandList[] = $command;
+        }
+
+        return $frameworkCommandList;
     }
 }

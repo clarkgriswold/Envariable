@@ -5,11 +5,11 @@ namespace Envariable;
 use Envariable\CustomConfigProcessor;
 use Envariable\EnvariableConfigLoader;
 use Envariable\Environment;
-use Envariable\Util\ServerUtil;
-use Envariable\Util\FileSystemUtil;
+use Envariable\Util\Server;
+use Envariable\Util\Filesystem;
 
 /**
- * Envariable Bootstrapper.
+ * Envariable Bootstrap.
  *
  * @author Mark Kasaboski <mark.kasaboski@gmail.com>
  */
@@ -31,34 +31,36 @@ class Envariable
     private $environment;
 
     /**
-     * @var \Envariable\Util\ServerUtil
+     * @var \Envariable\Util\Server
      */
-    private $serverUtil;
+    private $server;
 
     /**
-     * @var \Envariable\Util\FileSystemUtil
+     * @var \Envariable\Util\Filesystem
      */
-    private $fileSystemUtil;
+    private $filesystem;
 
     /**
      * @param \Envariable\CustomConfigProcessor|null  $customConfigProcessor
      * @param \Envariable\EnvariableConfigLoader|null $envariableConfigLoader
      * @param \Envariable\Environment|null            $environment
-     * @param \Envariable\Util\ServerUtil|null        $serverUtil
-     * @param \Envariable\Util\FileSystemUtil|null    $fileSystemUtil
+     * @param \Envariable\Util\Server|null            $server
+     * @param \Envariable\Util\Filesystem|null        $filesystem
      */
     public function __construct(
         CustomConfigProcessor $customConfigProcessor = null,
         EnvariableConfigLoader $envariableConfigLoader = null,
         Environment $environment = null,
-        ServerUtil $serverUtil = null,
-        FileSystemUtil $fileSystemUtil = null
+        Server $server = null,
+        Filesystem $filesystem = null
     ) {
         $this->customConfigProcessor  = $customConfigProcessor ?: new CustomConfigProcessor();
         $this->envariableConfigLoader = $envariableConfigLoader ?: new EnvariableConfigLoader();
         $this->environment            = $environment ?: new Environment();
-        $this->serverUtil             = $serverUtil ?: new ServerUtil();
-        $this->fileSystemUtil         = $fileSystemUtil ?: new FileSystemUtil();
+        $this->server                 = $server ?: new Server();
+        $this->filesystem             = $filesystem ?: new Filesystem();
+
+        $this->envariableConfigLoader->setFilesystem($this->filesystem);
     }
 
     /**
@@ -67,7 +69,7 @@ class Envariable
     public function execute()
     {
         $configMap = $this->envariableConfigLoader->loadConfigFile();
-var_export($configMap);die;
+
         $this->initializeAndInvokeEnvironment($configMap);
         $this->initializeAndInvokeConfigurationProcessor($configMap);
     }
@@ -80,7 +82,7 @@ var_export($configMap);die;
     private function initializeAndInvokeEnvironment(array $configMap)
     {
         $this->environment->setConfiguration($configMap);
-        $this->environment->setServerUtil($this->serverUtil);
+        $this->environment->setServer($this->server);
 
         $this->environment->detect();
     }
@@ -93,7 +95,7 @@ var_export($configMap);die;
     private function initializeAndInvokeConfigurationProcessor(array $configMap)
     {
         $this->customConfigProcessor->setConfiguration($configMap);
-        $this->customConfigProcessor->setFileSystemUtil($this->fileSystemUtil);
+        $this->customConfigProcessor->setFilesystem($this->filesystem);
         $this->customConfigProcessor->setEnvironment($this->environment->getDetectedEnvironment());
 
         $this->customConfigProcessor->execute();

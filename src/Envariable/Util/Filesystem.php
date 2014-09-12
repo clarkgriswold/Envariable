@@ -7,7 +7,7 @@ namespace Envariable\Util;
  *
  * @author Mark Kasaboski <mark.kasaboski@gmail.com>
  */
-class FileSystemUtil
+class Filesystem
 {
     /**
      * @var string

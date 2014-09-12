@@ -3,7 +3,6 @@
 namespace Envariable\Config\FrameworkCommand;
 
 use Envariable\Config\FrameworkCommand\FrameworkCommandInterface;
-use Envariable\Util\FileSystemUtil;
 
 /**
  * Create the Envariable config within the CodeIgniter framework.
@@ -18,7 +17,7 @@ class CodeIgniterCommand implements FrameworkCommandInterface
     const DS = DIRECTORY_SEPARATOR;
 
     /**
-     * @var \Envariable\Util\FileSystemUtil
+     * @var \Envariable\Util\Filesystem
      */
     private $filesystem;
 
@@ -30,22 +29,16 @@ class CodeIgniterCommand implements FrameworkCommandInterface
     /**
      * @var string|null
      */
-    private $detectedConfigFolderPath;
+    private $applicationConfigFolderPath;
 
     /**
      * Define the File System Utility.
      *
-     * @param \Envaraible\Util\FileSystemUtil $filesystem
+     * @param \Envaraible\Util\Filesystem $filesystem
      */
-    public function setFilesystem(FileSystemUtil $filesystem)
+    public function setFilesystem(Filesystem $filesystem)
     {
         $this->filesystem = $filesystem;
-    }
-
-    public function __construct()
-    {
-        $this->applicationRootPath      = $this->filesystem->getApplicationRootPath();
-        $this->detectedConfigFolderPath = null;
     }
 
     /**
@@ -53,18 +46,19 @@ class CodeIgniterCommand implements FrameworkCommandInterface
      */
     public function loadConfigFile()
     {
-        $applicationConfigFolderPath = sprintf('%s%sapplication%sconfig', $this->applicationRootPath, self::DS, self::DS);
+        $this->applicationRootPath         = $this->filesystem->getApplicationRootPath();
+        $this->applicationConfigFolderPath = sprintf('%s%sapplication%sconfig', $this->applicationRootPath, self::DS, self::DS);
 
-        if ( ! file_exists($applicationConfigFolderPath && ! $this->determineApplicationConfigFolderPath())) {
+        if ( ! file_exists($this->applicationConfigFolderPath) && ! $this->determineApplicationConfigFolderPath()) {
             return false;
         }
 
-        $configFilePath = sprintf('%s%sEnvariable%sconfig.php', $detectedConfigFolderPath, self::DS, self::DS);
+        $configFilePath = sprintf('%s%sEnvariable%sconfig.php', $this->applicationConfigFolderPath, self::DS, self::DS);
 
         if ( ! file_exists($configFilePath)) {
             $configTemplateFilePath = sprintf('%s%sConfig%sconfigTemplate.php', __DIR__, self::DS, self::DS);
 
-            $this->filesystem->createConfigFile($configTemplateFilePath, $detectedConfigFolderPath);
+            $this->filesystem->createConfigFile($configTemplateFilePath, $this->applicationConfigFolderPath);
         }
 
         return $this->filesystem->loadConfigFile($configFilePath);
@@ -104,7 +98,7 @@ class CodeIgniterCommand implements FrameworkCommandInterface
         $controllersFolderPathCandidate = sprintf('%s%s%s%scontrollers', $this->applicationRootPath, self::DS, $element, self::DS);
 
         if (file_exists($configFolderPathCandidate) && file_exists($controllersFolderPathCandidate)) {
-            $this->detectedConfigFolderPath = $configFolderPathCandidate;
+            $this->applicationConfigFolderPath = $configFolderPathCandidate;
 
             return true;
         }

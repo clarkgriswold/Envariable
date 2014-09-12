@@ -3,11 +3,11 @@
 namespace Envariable\Util;
 
 /**
- * Server Utility Class
+ * Server Utility Class.
  *
  * @author Mark Kasaboski <mark.kasaboski@gmail.com>
  */
-class ServerUtil
+class Server
 {
     /**
      * Retrieve the server interface type.
