@@ -3,6 +3,7 @@
 namespace Envariable\Config\FrameworkCommand;
 
 use Envariable\Config\FrameworkCommand\FrameworkCommandInterface;
+use Envariable\Util\Filesystem;
 
 /**
  * Create the Envariable config within the CodeIgniter framework.
@@ -32,7 +33,7 @@ class CodeIgniterCommand implements FrameworkCommandInterface
     private $applicationConfigFolderPath;
 
     /**
-     * Define the File System Utility.
+     * Define the Filesystem utility.
      *
      * @param \Envaraible\Util\Filesystem $filesystem
      */

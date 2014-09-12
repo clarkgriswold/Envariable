@@ -11,9 +11,9 @@ use Envariable\Util\Filesystem;
 interface FrameworkCommandInterface
 {
     /**
-     * Define the Filesystem.
+     * Define the Filesystem utility.
      *
-     * @param \Envariable\Util\Filesystem $filesystem [description]
+     * @param \Envariable\Util\Filesystem $filesystem
      */
     public function setFilesystem(Filesystem $filesystem);
 

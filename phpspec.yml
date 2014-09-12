@@ -7,8 +7,5 @@ extensions:
     - PhpSpec\Extension\CodeCoverageExtension
 code_coverage:
     blacklist:
-        - spec
-        - Util
-        - Config
-        - vendor
-
+        - src/Envariable/Util
+        - src/Envariable/Config
