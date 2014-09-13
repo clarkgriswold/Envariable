@@ -67,7 +67,7 @@ class Environment
             return;
         }
 
-        $result = array_filter($this->configMap['environmentToHostnameMap'], array($this, 'isValidHostname'));
+        $result = array_filter($this->configMap['environmentToHostnameMap'], array($this, 'isValidEnvironment'));
 
         if (empty($result)) {
             throw new \Exception('Could not detect the environment.');
@@ -77,25 +77,70 @@ class Environment
     }
 
     /**
-     * Validate hostname and, if $hostname is an array, validate subdomain as well.
+     * Validate given environment config data.
      *
-     * @param string|array $hostname
+     * @param string|array $configData
      *
      * @return boolean
      */
-    private function isValidHostname($hostname)
+    private function isValidEnvironment($configData)
     {
-        if (is_array($hostname)) {
-            $validHostname = $this->server->getHostname() === $hostname['hostname'];
+        if (is_array($configData)) {
+            $validationMethod = $this->determineValidationMethod($configData);
 
-            return $validHostname && (strpos($_SERVER['SERVER_NAME'], $hostname['subdomain']) === 0);
+            $this->{$validationMethod}($configData);
         }
 
-        if ($this->server->getHostname() === $hostname) {
+        if ($this->server->getHostname() === $configData) {
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * Determine the method of environment validation.
+     *
+     * @param array $configData
+     *
+     * @return boolean
+     */
+    private function determineValidationMethod(array $configData)
+    {
+        if (isset($configData['hostname']) && isset($configData['subdomain'])) {
+            return 'validateHostnameAndSubdomain';
+        }
+
+        if (count($configData) === 1 && isset($configData['subdomain']))
+        {
+            return 'validateSubdomain';
+        }
+    }
+
+    /**
+     * Validate both hostname and subdomain.
+     *
+     * @param array $configData
+     *
+     * @return boolean
+     */
+    private function validateHostnameAndSubdomain(array $configData)
+    {
+        $validHostname = $this->server->getHostname() === $configData['hostname'];
+
+        return $validHostname && $this->validateSubdomain($configData);
+    }
+
+    /**
+     * Validate subdomain.
+     *
+     * @param array $configData
+     *
+     * @return boolean
+     */
+    private function validateSubdomain(array $configData)
+    {
+        return strpos($_SERVER['SERVER_NAME'], $configData['subdomain']) === 0;
     }
 
     /**
