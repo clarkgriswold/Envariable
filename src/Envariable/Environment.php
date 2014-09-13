@@ -88,7 +88,7 @@ class Environment
         if (is_array($configData)) {
             $validationMethod = $this->determineValidationMethod($configData);
 
-            $this->{$validationMethod}($configData);
+            return $this->{$validationMethod}($configData);
         }
 
         if ($this->server->getHostname() === $configData) {
@@ -111,8 +111,7 @@ class Environment
             return 'validateHostnameAndSubdomain';
         }
 
-        if (count($configData) === 1 && isset($configData['subdomain']))
-        {
+        if (count($configData) === 1 && isset($configData['subdomain'])) {
             return 'validateSubdomain';
         }
     }
