@@ -27,6 +27,11 @@ class Environment
     private $environment;
 
     /**
+     * @var array
+     */
+    private $environmentValidationStrategyMap;
+
+    /**
      * Define the configuration.
      *
      * @param array $configMap
@@ -44,6 +49,16 @@ class Environment
     public function setServer(Server $server)
     {
         $this->server = $server;
+    }
+
+    /**
+     * Define the EnvironmentValidationStrategyMap.
+     *
+     * @param array $environmentValidationStrategyMap
+     */
+    public function setEnvironmentValidationStrategyMap(array $environmentValidationStrategyMap)
+    {
+        $this->environmentValidationStrategyMap = $environmentValidationStrategyMap;
     }
 
     /**
@@ -69,7 +84,7 @@ class Environment
 
         $result = array_filter($this->configMap['environmentToHostnameMap'], array($this, 'isValidEnvironment'));
 
-        if (empty($result)) {
+        if (empty($result) || count($result) > 1) {
             throw new \Exception('Could not detect the environment.');
         }
 
@@ -79,67 +94,28 @@ class Environment
     /**
      * Validate given environment config data.
      *
-     * @param string|array $configData
+     * @param array $configMap
      *
      * @return boolean
      */
-    private function isValidEnvironment($configData)
+    private function isValidEnvironment(array $configMap)
     {
-        if (is_array($configData)) {
-            $validationMethod = $this->determineValidationMethod($configData);
+        switch (true) {
+            case isset($configMap['hostname']) && isset($configMap['subdomain']):
+                $validationStrategy = $this->environmentValidationStrategyMap['HostnameSubdomainStrategy'];
+                $validationStrategy->setServer($this->server);
+                break;
 
-            return $this->{$validationMethod}($configData);
+            case count($configMap) === 1 && isset($configMap['hostname']):
+                $validationStrategy = $this->environmentValidationStrategyMap['HostnameStrategy'];
+                $validationStrategy->setServer($this->server);
+                break;
+
+            case count($configMap) === 1 && isset($configMap['subdomain']):
+                $validationStrategy = $this->environmentValidationStrategyMap['SubdomainStrategy'];
         }
 
-        if ($this->server->getHostname() === $configData) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Determine the method of environment validation.
-     *
-     * @param array $configData
-     *
-     * @return boolean
-     */
-    private function determineValidationMethod(array $configData)
-    {
-        if (isset($configData['hostname']) && isset($configData['subdomain'])) {
-            return 'validateHostnameAndSubdomain';
-        }
-
-        if (count($configData) === 1 && isset($configData['subdomain'])) {
-            return 'validateSubdomain';
-        }
-    }
-
-    /**
-     * Validate both hostname and subdomain.
-     *
-     * @param array $configData
-     *
-     * @return boolean
-     */
-    private function validateHostnameAndSubdomain(array $configData)
-    {
-        $validHostname = $this->server->getHostname() === $configData['hostname'];
-
-        return $validHostname && $this->validateSubdomain($configData);
-    }
-
-    /**
-     * Validate subdomain.
-     *
-     * @param array $configData
-     *
-     * @return boolean
-     */
-    private function validateSubdomain(array $configData)
-    {
-        return strpos($_SERVER['SERVER_NAME'], $configData['subdomain']) === 0;
+        return $validationStrategy->validate($configMap);
     }
 
     /**

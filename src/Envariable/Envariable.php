@@ -5,8 +5,11 @@ namespace Envariable;
 use Envariable\CustomConfigProcessor;
 use Envariable\EnvariableConfigLoader;
 use Envariable\Environment;
-use Envariable\Util\Server;
+use Envariable\HostnameStrategy;
+use Envariable\HostnameSubdomainStrategy;
+use Envariable\SubdomainStrategy;
 use Envariable\Util\Filesystem;
+use Envariable\Util\Server;
 
 /**
  * Envariable Bootstrap.
@@ -81,8 +84,15 @@ class Envariable
      */
     private function initializeAndInvokeEnvironment(array $configMap)
     {
+        $setEnvironmentValidationStrategyMap = array(
+            'HostnameStrategy'          => new HostnameStrategy(),
+            'HostnameSubdomainStrategy' => new HostnameSubdomainStrategy(),
+            'SubdomainStrategy'         => new SubdomainStrategy(),
+        );
+
         $this->environment->setConfiguration($configMap);
         $this->environment->setServer($this->server);
+        $this->environment->setEnvironmentValidationStrategyMap($setEnvironmentValidationStrategyMap);
 
         $this->environment->detect();
     }
