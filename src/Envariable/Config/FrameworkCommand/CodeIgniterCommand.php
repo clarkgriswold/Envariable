@@ -72,9 +72,9 @@ class CodeIgniterCommand implements FrameworkCommandInterface
      */
     private function determineApplicationConfigFolderPath()
     {
-        $rootDirectoryContentList = scandir($this->applicationRootPath);
+        $applicationRootDirectoryList = glob($this->applicationRootPath . '/*', GLOB_ONLYDIR);
 
-        $resultList = array_filter($rootDirectoryContentList, array($this, 'filterRootDirectoryContentListCallback'));
+        $resultList = array_filter($applicationRootDirectoryList, array($this, 'filterRootDirectoryContentListCallback'));
 
         if (empty($resultList) || count($resultList) > 1) {
             return false;
@@ -86,17 +86,14 @@ class CodeIgniterCommand implements FrameworkCommandInterface
     /**
      * Filter root directory content list callback.
      *
-     * @param string $element
+     * @param string $applicationRootPathCandidate
      *
      * @return boolean
      */
-    private function filterRootDirectoryContentListCallback($element) {
-        if (strpos($element, '.') === 0) {
-            return false;
-        }
-
-        $configFolderPathCandidate      = sprintf('%s%s%s%sconfig', $this->applicationRootPath, self::DS, $element, self::DS);
-        $controllersFolderPathCandidate = sprintf('%s%s%s%scontrollers', $this->applicationRootPath, self::DS, $element, self::DS);
+    private function filterRootDirectoryContentListCallback($applicationRootPathCandidate)
+    {
+        $configFolderPathCandidate      = sprintf('%s%sconfig', $applicationRootPathCandidate, self::DS);
+        $controllersFolderPathCandidate = sprintf('%s%scontrollers', $applicationRootPathCandidate, self::DS);
 
         if (file_exists($configFolderPathCandidate) && file_exists($controllersFolderPathCandidate)) {
             $this->applicationConfigFolderPath = $configFolderPathCandidate;
