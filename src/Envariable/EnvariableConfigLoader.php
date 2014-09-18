@@ -37,6 +37,8 @@ class EnvariableConfigLoader
         $frameworkCommandList = $this->getFrameworkCommandList();
 
         foreach ($frameworkCommandList as $command) {
+            $command->setFilesystem($this->filesystem);
+
             $configMap = $command->loadConfigFile();
 
             if ( ! $configMap) {
@@ -49,29 +51,21 @@ class EnvariableConfigLoader
         throw new \Exception('Could not load Envariable config.');
     }
 
+    /**
+     * Retrieve a list of all of the current framework commands.
+     *
+     * @return array
+     */
     private function getFrameworkCommandList()
     {
         $frameworkCommandList = array();
         $frameworkCommandPath = sprintf('%s%sConfig%sFrameworkCommand', __DIR__, DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR);
-        $directoryIterator    = new \DirectoryIterator($frameworkCommandPath);
+        $commandFilePathList  = glob($frameworkCommandPath . '/*[!Interface].php');
 
-        foreach ($directoryIterator as $fileInfo) {
-            if ($fileInfo->isDot()) {
-                continue;
-            }
+        foreach ($commandFilePathList as $commandFilePath) {
+            $commandNamespace = 'Envariable\\Config\\FrameworkCommand\\' . basename($commandFilePath, '.php');
 
-            $basename = $fileInfo->getBasename('.' . $fileInfo->getExtension());
-
-            if (strpos($basename, 'Interface') !== false) {
-                continue;
-            }
-
-            $namespace = 'Envariable\\Config\\FrameworkCommand\\' . $basename;
-
-            $command = new $namespace;
-            $command->setFilesystem($this->filesystem);
-
-            $frameworkCommandList[] = $command;
+            $frameworkCommandList[] = new $commandNamespace;
         }
 
         return $frameworkCommandList;
