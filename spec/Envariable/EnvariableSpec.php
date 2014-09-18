@@ -18,9 +18,9 @@ use Prophecy\Argument;
 class EnvariableSpec extends ObjectBehavior
 {
     /**
-     * @var \Envaraible\Util\Filesystem
+     * @var \Envariable\EnvariableConfigLoader
      */
-    private $filesystem;
+    private $envariableConfigLoader;
 
     /**
      * Pre-test setup.
@@ -44,26 +44,35 @@ class EnvariableSpec extends ObjectBehavior
         $server->beADoubleOf('Envariable\Util\Server');
         $filesystem->beADoubleOf('Envariable\Util\Filesystem');
 
-        $this->filesystem = $filesystem;
+        $this->envariableConfigLoader = $envariableConfigLoader;
 
         $this->beConstructedWith(
             $customConfigProcessor,
-            $envariableConfigLoader,
+            $this->envariableConfigLoader,
             $environment,
             $server,
-            $this->filesystem
+            $filesystem
         );
         $this->shouldHaveType('Envariable\Envariable');
     }
 
-    function it_does_stuff(Environment $environment)
+    /**
+     * Test that Envariable bootstraps all of its components
+     *
+     * @param \Envariable\Environment
+     */
+    function it_executes_the_bootstrapping_of_all_of_the_envariable_components(Environment $environment)
     {
-        //$this->filesystem->getApplicationRootPath()->willReturn('ding');
+        $this
+            ->envariableConfigLoader
+            ->loadConfigFile()
+            ->willReturn(array(
+                'production' => array(
+                    'hostname' => 'some-hostname',
+                ),
+            ));
+
+        $this->execute();
         $this->getEnvironment()->shouldReturn($environment);
     }
-
-    /*function it_does_other_stuff()
-    {
-        $this->filesystem->getApplicationRootPath()->willReturn('dong');
-    }*/
 }

@@ -41,6 +41,9 @@ class EnvariableConfigLoader
 
             $configMap = $command->loadConfigFile();
 
+            // Intentially breaking Object Calisthenics here until
+            // I can find a better way of approaching this with the
+            // Chain of Command (Chain of Responsibility) pattern.
             if ( ! $configMap) {
                 continue;
             }
