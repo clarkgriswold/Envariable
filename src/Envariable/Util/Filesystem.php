@@ -9,6 +9,7 @@ namespace Envariable\Util;
  */
 class Filesystem
 {
+
     /**
      * @var string
      */
@@ -51,11 +52,15 @@ class Filesystem
      */
     public function createConfigFile($configTemplateFilePath, $applicationConfigFolderPath)
     {
-        if ( ! mkdir($applicationConfigFolderPath . '/Envariable', 0755)) {
+        $envariableConfigDirectoryPath = sprintf('%s%sEnvariable', $applicationConfigFolderPath, DIRECTORY_SEPARATOR);
+
+        if ( ! mkdir($envariableConfigDirectoryPath, 0755)) {
             throw new \Exception('Could not create Envariable config folder within application config folder.');
         }
 
-        if ( ! copy($configTemplateFilePath, $applicationConfigFolderPath . '/Envariable/config.php')) {
+        $envariableConfigFilePath = sprintf('%s%sEnvariable%sconfig.php', $applicationConfigFolderPath, DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR);
+
+        if ( ! copy($configTemplateFilePath, $envariableConfigFilePath)) {
             throw new \Exception('Could not copy config file to destination.');
         }
     }

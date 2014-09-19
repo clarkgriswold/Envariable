@@ -2,6 +2,8 @@
 
 namespace Envariable;
 
+use Envariable\Config\FrameworkCommand\CodeIgniterCommand;
+use Envariable\Config\FrameworkCommand\FrameworkCommandInterface;
 use Envariable\CustomConfigProcessor;
 use Envariable\EnvariableConfigLoader;
 use Envariable\Environment;
@@ -63,7 +65,24 @@ class Envariable
         $this->server                 = $server ?: new Server();
         $this->filesystem             = $filesystem ?: new Filesystem();
 
-        $this->envariableConfigLoader->setFilesystem($this->filesystem);
+        $frameworkCommandList = array(
+            new CodeIgniterCommand(),
+            // Add more commands here...
+        );
+
+        array_map(array($this, 'addCommandCallback'), $frameworkCommandList);
+    }
+
+    /**
+     * Add command callback.
+     *
+     * @param \Envariable\Config\FrameworkCommand\FrameworkCommandInterface $command
+     */
+    private function addCommandCallback(FrameworkCommandInterface $frameworkCommand)
+    {
+        $frameworkCommand->setFilesystem($this->filesystem);
+
+        $this->envariableConfigLoader->addCommand($frameworkCommand);
     }
 
     /**

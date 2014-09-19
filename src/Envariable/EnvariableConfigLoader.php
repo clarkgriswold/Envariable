@@ -2,6 +2,7 @@
 
 namespace Envariable;
 
+use Envariable\Config\FrameworkCommand\FrameworkCommandInterface;
 use Envariable\Util\Filesystem;
 
 /**
@@ -12,18 +13,18 @@ use Envariable\Util\Filesystem;
 class EnvariableConfigLoader
 {
     /**
-     * @var \Envariable\Util\Filesystem
+     * @var array
      */
-    private $filesystem;
+    private $frameworkCommandList = array();
 
     /**
-     * Define the Filesystem Utility.
+     * Add a command to the framework command list.
      *
-     * @param \Envariable\Util\Filesystem $filesystem
+     * @param \Envariable\Config\FrameworkCommand\FrameworkCommandInterface $command
      */
-    public function setFilesystem(Filesystem $filesystem)
+    public function addCommand(FrameworkCommandInterface $command)
     {
-        $this->filesystem = $filesystem;
+        $this->frameworkCommandList[] = $command;
     }
 
     /**
@@ -34,11 +35,7 @@ class EnvariableConfigLoader
      */
     public function loadConfigFile()
     {
-        $frameworkCommandList = $this->getFrameworkCommandList();
-
-        foreach ($frameworkCommandList as $command) {
-            $command->setFilesystem($this->filesystem);
-
+        foreach ($this->frameworkCommandList as $command) {
             $configMap = $command->loadConfigFile();
 
             // Intentially breaking Object Calisthenics here until
@@ -52,25 +49,5 @@ class EnvariableConfigLoader
         }
 
         throw new \Exception('Could not load Envariable config.');
-    }
-
-    /**
-     * Retrieve a list of all of the current framework commands.
-     *
-     * @return array
-     */
-    private function getFrameworkCommandList()
-    {
-        $frameworkCommandList = array();
-        $frameworkCommandPath = sprintf('%s%sConfig%sFrameworkCommand', __DIR__, DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR);
-        $commandFilePathList  = glob($frameworkCommandPath . '/*[!Interface].php');
-
-        foreach ($commandFilePathList as $commandFilePath) {
-            $commandNamespace = 'Envariable\\Config\\FrameworkCommand\\' . basename($commandFilePath, '.php');
-
-            $frameworkCommandList[] = new $commandNamespace;
-        }
-
-        return $frameworkCommandList;
     }
 }
