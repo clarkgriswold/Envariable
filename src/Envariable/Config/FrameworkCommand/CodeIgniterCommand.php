@@ -57,12 +57,20 @@ class CodeIgniterCommand implements FrameworkCommandInterface
         $configFilePath = sprintf('%s%sEnvariable%sconfig.php', $this->applicationConfigFolderPath, self::DS, self::DS);
 
         if ( ! file_exists($configFilePath)) {
-            $configTemplateFilePath = sprintf('%s%sConfig%sconfigTemplate.php', __DIR__, self::DS, self::DS);
-
-            $this->filesystem->createConfigFile($configTemplateFilePath, $this->applicationConfigFolderPath);
+            $this->createConfigFile();
         }
 
         return $this->filesystem->loadConfigFile($configFilePath);
+    }
+
+    /**
+     * Copy the Envariable config template to the application config.
+     */
+    private function createConfigFile()
+    {
+        $configTemplateFilePath = sprintf('%s%sConfig%sconfigTemplate.php', __DIR__, self::DS, self::DS);
+
+        $this->filesystem->createConfigFile($configTemplateFilePath, $this->applicationConfigFolderPath);
     }
 
     /**
@@ -92,10 +100,9 @@ class CodeIgniterCommand implements FrameworkCommandInterface
      */
     private function filterRootDirectoryContentListCallback($applicationRootPathCandidate)
     {
-        $configFolderPathCandidate      = sprintf('%s%sconfig', $applicationRootPathCandidate, self::DS);
-        $controllersFolderPathCandidate = sprintf('%s%scontrollers', $applicationRootPathCandidate, self::DS);
+        $configFolderPathCandidate = sprintf('%s%sconfig', $applicationRootPathCandidate, self::DS);
 
-        if (file_exists($configFolderPathCandidate) && file_exists($controllersFolderPathCandidate)) {
+        if (file_exists($configFolderPathCandidate)) {
             $this->applicationConfigFolderPath = $configFolderPathCandidate;
 
             return true;
