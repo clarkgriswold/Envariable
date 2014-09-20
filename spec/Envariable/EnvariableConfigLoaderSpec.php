@@ -7,6 +7,11 @@ use Prophecy\Argument;
 use Envariable\Config\FrameworkCommand\FrameworkCommandInterface;
 use Envariable\Util\Filesystem;
 
+/**
+ * Envariable Config Loader Test.
+ *
+ * @author Mark Kasaboski <mark.kasaboski@gmail.com>
+ */
 class EnvariableConfigLoaderSpec extends ObjectBehavior
 {
     /**
@@ -17,9 +22,11 @@ class EnvariableConfigLoaderSpec extends ObjectBehavior
         $this->shouldHaveType('Envariable\EnvariableConfigLoader');
     }
 
+    /**
+     * Test that the loader returns an array with 'class' => 'JustRightCommand'.
+     */
     function it_will_return_an_array_that_contains_class_justrightcommand()
     {
-
         $this->addCommand(new TooHotCommand());
         $this->addCommand(new TooColdCommand());
         $this->addCommand(new JustRightCommand());
@@ -29,9 +36,11 @@ class EnvariableConfigLoaderSpec extends ObjectBehavior
         ));
     }
 
+    /**
+     * Test that it will throw an exception with the message "Could not load Envariable config".
+     */
     function it_will_throw_a_could_not_load_envariable_config_exception()
     {
-
         $this->addCommand(new TooHotCommand());
         $this->addCommand(new TooColdCommand());
 
@@ -39,6 +48,9 @@ class EnvariableConfigLoaderSpec extends ObjectBehavior
     }
 }
 
+/**
+ * TooHotCommand Stub.
+ */
 class TooHotCommand implements FrameworkCommandInterface
 {
     public function setFilesystem(Filesystem $filesystem) {}
@@ -49,6 +61,9 @@ class TooHotCommand implements FrameworkCommandInterface
     }
 }
 
+/**
+ * TooColdCommand Stub.
+ */
 class TooColdCommand implements FrameworkCommandInterface
 {
     public function setFilesystem(Filesystem $filesystem) {}
@@ -59,6 +74,9 @@ class TooColdCommand implements FrameworkCommandInterface
     }
 }
 
+/**
+ * JustRightCommand Stub.
+ */
 class JustRightCommand implements FrameworkCommandInterface
 {
     public function setFilesystem(Filesystem $filesystem) {}
