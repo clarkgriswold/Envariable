@@ -113,6 +113,10 @@ class Environment
 
             case count($configMap) === 1 && isset($configMap['servername']):
                 $validationStrategy = $this->environmentValidationStrategyMap['ServernameStrategy'];
+                break;
+
+            default:
+                throw new \Exception('A validation strategy could not be found.');
         }
 
         return $validationStrategy->validate($configMap);
