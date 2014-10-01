@@ -76,7 +76,7 @@ class CodeIgniterCommand implements FrameworkCommandInterface
     /**
      * Determine the path to the application folder.
      *
-     * @return string
+     * @return boolean
      */
     private function determineApplicationConfigFolderPath()
     {
