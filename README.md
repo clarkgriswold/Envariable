@@ -19,7 +19,7 @@ Ok, so basic documentation until I get the urge to write this up a little bit be
 
 These instructions will assume a CodeIgniter setup for the time being.
 
-Currently this is not published on Packagist (not sure if I will at the moment) so you will need to add this first:
+Currently this is not published on Packagist (not sure if I will at the moment) so you will need to first add this to your composer.json:
 
     "repositories": [
         {
