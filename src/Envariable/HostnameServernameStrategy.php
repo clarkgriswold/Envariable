@@ -6,11 +6,11 @@ use Envariable\EnvironmentValidationStrategyInterface;
 use Envariable\Util\Server;
 
 /**
- * Hostname and Subdomain validation strategy.
+ * Hostname and Servername validation strategy.
  *
  * @author Mark Kasaboski <mark.kasaboski@gmail.com>
  */
-class HostnameSubdomainStrategy implements EnvironmentValidationStrategyInterface
+class HostnameServernameStrategy implements EnvironmentValidationStrategyInterface
 {
     /**
      * @var \Envariable\Util\Server
@@ -34,6 +34,6 @@ class HostnameSubdomainStrategy implements EnvironmentValidationStrategyInterfac
     {
         $validHostname = $this->server->getHostname() === $configMap['hostname'];
 
-        return $validHostname && (strpos($_SERVER['SERVER_NAME'], $configMap['subdomain']) === 0);
+        return $validHostname && (strpos($_SERVER['SERVER_NAME'], $configMap['servername']) === 0);
     }
 }

@@ -2,14 +2,17 @@
 
 return array(
 
-    // An array of environments mapped to their respective
-    // machine names (hostnames). See the README for further details.
+    // An array of environments mapped to detection methods.
+    // See the README for further details.
     // @see http://php.net/manual/en/function.gethostname.php
-    'environmentToHostnameMap' => array(
+    'environmentToDetectionMethodMap' => array(
         // Examples:
-        // 'production' => 'your-production-machine-name',
-        // 'testing'    => 'your-testing-machine-name',
-        // 'local'      => 'YourName-MacBook-Pro.local',
+        // 'production' => array(
+        //     'hostname' => 'your-production-machine-name', // Using hostname for detection
+        // ),
+        // 'testing'    => array(
+        //     'servername' => 'your-testing-machine-name', // Using servername for detection
+        // ),
     ),
 
     // The default environment with CLI. You may wish to change

@@ -8,8 +8,8 @@ use Envariable\CustomConfigProcessor;
 use Envariable\EnvariableConfigLoader;
 use Envariable\Environment;
 use Envariable\HostnameStrategy;
-use Envariable\HostnameSubdomainStrategy;
-use Envariable\SubdomainStrategy;
+use Envariable\HostnameServernameStrategy;
+use Envariable\ServernameStrategy;
 use Envariable\Util\Filesystem;
 use Envariable\Util\Server;
 
@@ -104,9 +104,9 @@ class Envariable
     private function initializeAndInvokeEnvironment(array $configMap)
     {
         $setEnvironmentValidationStrategyMap = array(
-            'HostnameStrategy'          => new HostnameStrategy(),
-            'HostnameSubdomainStrategy' => new HostnameSubdomainStrategy(),
-            'SubdomainStrategy'         => new SubdomainStrategy(),
+            'HostnameStrategy'           => new HostnameStrategy(),
+            'HostnameServernameStrategy' => new HostnameServernameStrategy(),
+            'ServernameStrategy'         => new ServernameStrategy(),
         );
 
         $this->environment->setConfiguration($configMap);

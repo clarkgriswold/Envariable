@@ -3,8 +3,8 @@
 namespace spec\Envariable;
 
 use Envariable\HostnameStrategy;
-use Envariable\HostnameSubdomainStrategy;
-use Envariable\SubdomainStrategy;
+use Envariable\HostnameServernameStrategy;
+use Envariable\ServernameStrategy;
 use Envariable\Util\Server;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -20,20 +20,20 @@ class EnvironmentSpec extends ObjectBehavior
      * @var array
      */
     private static $configMap = array(
-        'environmentToHostnameMap' => array(
-            'production-without-subdomain-matching' => array(
-                'hostname'  => 'production.machine-name.without-subdomain-matching',
+        'environmentToDetectionMethodMap' => array(
+            'production-without-servername-matching' => array(
+                'hostname'   => 'production.machine-name.without-servername-matching',
             ),
-            'production-with-subdomain-matching'    => array(
-                'hostname'  => 'production.machine-name.with-subdomain-matching',
-                'subdomain' => 'www',
+            'production-with-servername-matching'    => array(
+                'hostname'   => 'production.machine-name.with-servername-matching',
+                'servername' => 'www',
             ),
-            'testing-with-subdomain-matching'       => array(
-                'hostname'  => 'testing.machine-name.with-subdomain-matching',
-                'subdomain' => 'testing',
+            'testing-with-servername-matching'       => array(
+                'hostname'   => 'testing.machine-name.with-servername-matching',
+                'servername' => 'testing',
             ),
-            'staging-without-hostname-matching'     => array(
-                'subdomain' => 'staging',
+            'staging-without-hostname-matching'      => array(
+                'servername' => 'staging',
             ),
         ),
         'cliDefaultEnvironment' => 'production',
@@ -49,9 +49,9 @@ class EnvironmentSpec extends ObjectBehavior
      */
     function let()
     {
-        self::$environmentValidationStrategyMap['HostnameStrategy']          = new HostnameStrategy();
-        self::$environmentValidationStrategyMap['HostnameSubdomainStrategy'] = new HostnameSubdomainStrategy();
-        self::$environmentValidationStrategyMap['SubdomainStrategy']         = new SubdomainStrategy();
+        self::$environmentValidationStrategyMap['HostnameStrategy']           = new HostnameStrategy();
+        self::$environmentValidationStrategyMap['HostnameServernameStrategy'] = new HostnameServernameStrategy();
+        self::$environmentValidationStrategyMap['ServernameStrategy']         = new ServernameStrategy();
     }
 
     /**
@@ -63,11 +63,11 @@ class EnvironmentSpec extends ObjectBehavior
     }
 
     /**
-     * Test that exception not thrown and that getDetectedEnvironment returns 'production-without-subdomain-matching'.
+     * Test that exception not thrown and that getDetectedEnvironment returns 'production-without-servername-matching'.
      *
      * @param \Envariable\Util\Server $server
      */
-    function it_will_return_production_without_subdomain_matching(Server $server)
+    function it_will_return_production_without_servername_matching(Server $server)
     {
         $_SERVER['SERVER_NAME'] = 'www.example.com';
 
@@ -77,22 +77,22 @@ class EnvironmentSpec extends ObjectBehavior
 
         $server
             ->getHostname()
-            ->willReturn(self::$configMap['environmentToHostnameMap']['production-without-subdomain-matching']['hostname']);
+            ->willReturn(self::$configMap['environmentToDetectionMethodMap']['production-without-servername-matching']['hostname']);
 
         $this->setConfiguration(self::$configMap);
         $this->setServer($server);
         $this->setEnvironmentValidationStrategyMap(self::$environmentValidationStrategyMap);
 
         $this->shouldNotThrow('\Exception')->duringDetect();
-        $this->getDetectedEnvironment()->shouldReturn('production-without-subdomain-matching');
+        $this->getDetectedEnvironment()->shouldReturn('production-without-servername-matching');
     }
 
     /**
-     * Test that exception not thrown and that getDetectedEnvironment returns 'production-with-subdomain-matching'.
+     * Test that exception not thrown and that getDetectedEnvironment returns 'production-with-servername-matching'.
      *
      * @param \Envariable\Util\Server $server
      */
-    function it_will_return_production_with_subdomain_matching(Server $server)
+    function it_will_return_production_with_servername_matching(Server $server)
     {
         $_SERVER['SERVER_NAME'] = 'www.example.com';
 
@@ -102,22 +102,22 @@ class EnvironmentSpec extends ObjectBehavior
 
         $server
             ->getHostname()
-            ->willReturn(self::$configMap['environmentToHostnameMap']['production-with-subdomain-matching']['hostname']);
+            ->willReturn(self::$configMap['environmentToDetectionMethodMap']['production-with-servername-matching']['hostname']);
 
         $this->setConfiguration(self::$configMap);
         $this->setServer($server);
         $this->setEnvironmentValidationStrategyMap(self::$environmentValidationStrategyMap);
 
         $this->shouldNotThrow('\Exception')->duringDetect();
-        $this->getDetectedEnvironment()->shouldReturn('production-with-subdomain-matching');
+        $this->getDetectedEnvironment()->shouldReturn('production-with-servername-matching');
     }
 
     /**
-     * Test that exception not thrown and that getDetectedEnvironment returns 'testing-with-subdomain-matching'.
+     * Test that exception not thrown and that getDetectedEnvironment returns 'testing-with-servername-matching'.
      *
      * @param \Envariable\Util\Server $server
      */
-    function it_will_return_testing_with_subdomain_matching(Server $server)
+    function it_will_return_testing_with_servername_matching(Server $server)
     {
         $_SERVER['SERVER_NAME'] = 'testing.example.com';
 
@@ -127,14 +127,14 @@ class EnvironmentSpec extends ObjectBehavior
 
         $server
             ->getHostname()
-            ->willReturn(self::$configMap['environmentToHostnameMap']['testing-with-subdomain-matching']['hostname']);
+            ->willReturn(self::$configMap['environmentToDetectionMethodMap']['testing-with-servername-matching']['hostname']);
 
         $this->setConfiguration(self::$configMap);
         $this->setServer($server);
         $this->setEnvironmentValidationStrategyMap(self::$environmentValidationStrategyMap);
 
         $this->shouldNotThrow('\Exception')->duringDetect();
-        $this->getDetectedEnvironment()->shouldReturn('testing-with-subdomain-matching');
+        $this->getDetectedEnvironment()->shouldReturn('testing-with-servername-matching');
     }
 
     /**
@@ -208,7 +208,7 @@ class EnvironmentSpec extends ObjectBehavior
     }
 
     /**
-     * Test that exception is thrown as the environmentToHostnameMap is empty.
+     * Test that exception is thrown as the environmentToDetectionMethodMap is empty.
      *
      * @param \Envariable\Util\Server $server
      */
@@ -219,12 +219,12 @@ class EnvironmentSpec extends ObjectBehavior
             ->willReturn('apache2handler');
 
         $this->setConfiguration(array(
-            'environmentToHostnameMap' => array(),
+            'environmentToDetectionMethodMap' => array(),
             'cliDefaultEnvironment'    => 'production',
         ));
         $this->setServer($server);
 
-        $this->shouldThrow(new \Exception('You have not defined any hostnames within the "environmentToHostnameMap" array within Envariable config.'))->duringDetect();
+        $this->shouldThrow(new \Exception('You have not defined any hostnames within the "environmentToDetectionMethodMap" array within Envariable config.'))->duringDetect();
         $this->getDetectedEnvironment()->shouldReturn(null);
     }
 
@@ -241,11 +241,11 @@ class EnvironmentSpec extends ObjectBehavior
 
         $server
             ->getHostname()
-            ->willReturn(self::$configMap['environmentToHostnameMap']['production-without-subdomain-matching']['hostname']);
+            ->willReturn(self::$configMap['environmentToDetectionMethodMap']['production-without-servername-matching']['hostname']);
 
         $this->setConfiguration(array(
-            'environmentToHostnameMap' => array(
-                'production-without-subdomain-matching' => array(
+            'environmentToDetectionMethodMap' => array(
+                'production-without-servername-matching' => array(
                     'hostname' => 'this-will-not-match',
                 ),
             ),
@@ -273,15 +273,15 @@ class EnvironmentSpec extends ObjectBehavior
 
         $server
             ->getHostname()
-            ->willReturn(self::$configMap['environmentToHostnameMap']['production-without-subdomain-matching']['hostname']);
+            ->willReturn(self::$configMap['environmentToDetectionMethodMap']['production-without-servername-matching']['hostname']);
 
         $this->setConfiguration(array(
-            'environmentToHostnameMap' => array(
+            'environmentToDetectionMethodMap' => array(
                 'production' => array(
-                    'hostname' => 'production.machine-name.without-subdomain-matching',
+                    'hostname' => 'production.machine-name.without-servername-matching',
                 ),
                 'production-redundant-entry'    => array(
-                    'hostname' => 'production.machine-name.without-subdomain-matching',
+                    'hostname' => 'production.machine-name.without-servername-matching',
                 ),
             ),
             'cliDefaultEnvironment'    => 'production',

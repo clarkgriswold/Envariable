@@ -72,8 +72,8 @@ class Environment
             throw new \Exception('cliDefaultEnvironment must contain a value within Envariable config.');
         }
 
-        if (empty($this->configMap['environmentToHostnameMap'])) {
-            throw new \Exception('You have not defined any hostnames within the "environmentToHostnameMap" array within Envariable config.');
+        if (empty($this->configMap['environmentToDetectionMethodMap'])) {
+            throw new \Exception('You have not defined any hostnames within the "environmentToDetectionMethodMap" array within Envariable config.');
         }
 
         if ($this->server->getInterfaceType() === 'cli') {
@@ -82,7 +82,7 @@ class Environment
             return;
         }
 
-        $result = array_filter($this->configMap['environmentToHostnameMap'], array($this, 'isValidEnvironment'));
+        $result = array_filter($this->configMap['environmentToDetectionMethodMap'], array($this, 'isValidEnvironment'));
 
         if (empty($result) || count($result) > 1) {
             throw new \Exception('Could not detect the environment.');
@@ -101,8 +101,8 @@ class Environment
     private function isValidEnvironment(array $configMap)
     {
         switch (true) {
-            case isset($configMap['hostname']) && isset($configMap['subdomain']):
-                $validationStrategy = $this->environmentValidationStrategyMap['HostnameSubdomainStrategy'];
+            case isset($configMap['hostname']) && isset($configMap['servername']):
+                $validationStrategy = $this->environmentValidationStrategyMap['HostnameServernameStrategy'];
                 $validationStrategy->setServer($this->server);
                 break;
 
@@ -111,8 +111,8 @@ class Environment
                 $validationStrategy->setServer($this->server);
                 break;
 
-            case count($configMap) === 1 && isset($configMap['subdomain']):
-                $validationStrategy = $this->environmentValidationStrategyMap['SubdomainStrategy'];
+            case count($configMap) === 1 && isset($configMap['servername']):
+                $validationStrategy = $this->environmentValidationStrategyMap['ServernameStrategy'];
         }
 
         return $validationStrategy->validate($configMap);
