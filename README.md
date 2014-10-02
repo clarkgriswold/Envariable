@@ -8,7 +8,7 @@ Envariable
 
 ##### Why does this exist?
 
-I created Envariable because I have an old CodeIgniter project that I still have to maintain and I've never been too keen on how CI deals with environments. Also, I used this as an excuse to learn how to create composer packages, something I've never done before prior to this.
+I created Envariable because I have an old CodeIgniter project that I still have to maintain and I've never been too keen on how CI deals with environments. In seeing how Laravel handles this with .env files, I set out to flagrantly steal that idea and use it for my own needs (falling short of a complete rewrite using Laravel or even Symfony which, believe me, I would love to do). Also, I used this as an excuse to learn how to create composer packages. Something I've never done prior to this.
 
 Currently Envariable only supports CodeIgniter, but I built it in such a way that it can be easily adapted to other frameworks or projects should the need arise.
 
@@ -39,7 +39,7 @@ Run composer install.
 
 Within your front controller (index.php) be sure to require the composer autoloader:
 
-    include_once './vendor/autoload.php';
+    include_once __DIR__ . '/vendor/autoload.php';
 
 Then just below that add:
 
