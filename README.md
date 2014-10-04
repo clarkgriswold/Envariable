@@ -120,7 +120,55 @@ The main thing to note here is that keys of each element within the environmentT
         'servername' => 'whatever.com',
     ),
 
-The .env files should be located within the same directory that your vendor directory is in. You can change this with the customEnvironmentConfigPath config setting. For more details on cliDefaultEnvironment and customEnvironmentConfigPath please refer to the notes within the Envariable config file.
+The .env files should be located within the same directory that your vendor directory is in. You can change this with the customEnvironmentConfigPath config setting.
+
+The .env file should return an array and should look something like this:
+
+    return array(
+        'db' => array(
+            'host'     => 'hostname',
+            'database' => 'password',
+            'username' => 'username',
+            'password' => 'p455w0rd',
+        ),
+        'some_other_web_service' => array(
+            'email'    => 'your.email@example.com',
+            'password' => 'p455w0rd',
+        ),
+    );
+
+Once Envariable parses this they will then be available via both $_ENV as well as getenv(). So, to access the database settings you would do this:
+
+    $_ENV['DB_HOST'] or getenv('DB_HOST')
+    $_ENV['DB_DATABASE'] or getenv('DB_DATABASE')
+    $_ENV['DB_USERNAME'] or getenv('DB_USERNAME')
+    $_ENV['DB_PASSWORD'] or getenv('DB_PASSWORD')
+
+Or for your web service credentials:
+
+    $_ENV['SOME_OTHER_WEB_SERVICE_EMAIL'] or getenv('SOME_OTHER_WEB_SERVICE_EMAIL')
+    $_ENV['SOME_OTHER_WEB_SERVICE_PASSWORD'] or getenv('SOME_OTHER_WEB_SERVICE_PASSWORD')
+
+I think you get the picture.
+
+One more thing to note within the .env file, it's also possible to keep nesting. Example:
+
+    return array(
+        'something' => array(
+            'element_one' => 'some-value',
+            'element_two' => array(
+                'sub_element_one' => 'some-value',
+            ),
+        ),
+    );
+
+You then access it as such:
+
+    $_ENV['SOMETHING_ELEMENT_ONE_SUB_ELEMENT_ONE'] or getenv('SOMETHING_ELEMENT_ONE_SUB_ELEMENT_ONE')
+
+I highly doubt this will ever be needed, but it's there anyway.
+
+For more details on cliDefaultEnvironment and customEnvironmentConfigPath please refer to the notes within the Envariable config file.
 
 
 ##### TODO:
