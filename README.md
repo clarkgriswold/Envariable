@@ -120,7 +120,7 @@ The main thing to note here is that keys of each element within the environmentT
         'servername' => 'whatever.com',
     ),
 
-For cliDefaultEnvironment and customEnvironmentConfigPath please refer to the notes within the Envariable config file.
+The .env files should be located within the same directory that your vendor directory is in. You can change this with the customEnvironmentConfigPath config setting. For more details on cliDefaultEnvironment and customEnvironmentConfigPath please refer to the notes within the Envariable config file.
 
 
 ##### TODO:
