@@ -151,7 +151,7 @@ Or for your web service credentials:
 
 I think you get the picture.
 
-One more thing to note within the .env file, it's also possible to keep nesting. Example:
+One more thing to note within the .env file is that it's also possible to keep nesting. Example:
 
     return array(
         'something' => array(
