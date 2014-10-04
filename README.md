@@ -41,7 +41,7 @@ Within your front controller (index.php) be sure to require the composer autoloa
 
     include_once __DIR__ . '/vendor/autoload.php';
 
-Then just below that add:
+Then, just below that add:
 
     $envariable = new Envariable\Envariable();
     $envariable->execute();
@@ -55,5 +55,69 @@ Upon reloading the site you will now see an exception being thrown. Obviously yo
 
 Envariable has placed a config file that you need to modify to your needs within CodeIgniter's application config folder application/config/Envariable/config.php.
 
-... ah poop. Got interrupted by a phone call and couldn't finish cuz now it's bed time. I'll get back to ya...
+Within the Envariable config file you will see three items:
+
+    • environmentToDetectionMethodMap
+    • cliDefaultEnvironment
+    • customEnvironmentConfigPath
+
+environmentToDetectionMethodMap is the main one we're concerned with here. There are two types of detection methods used: hostname and servername. You can use either one or both depending on your situation. Idealy you would use only hostname as hostname is the name of the machine that your app is running on and is not at all spoofable. But, in the situation where your app is on shared hosting and is load balanced across multiple servers, hostname will no longer suffice. In this case you'll want to stick with servername. You can use this to map just your subdomain if you'd like. A third scenario is where your hostname is stable and is safe to use, but you have multiple subdomains which all use separate database connections (as an example). In this case you can use both the hostname and the servername together. See below examples:
+
+    // Hostname example
+    'environmentToDetectionMethodMap' => array(
+        'production' => array(
+            'hostname' => 'production-machine-name',
+        ),
+        'testing' => array(
+            'hostname' => 'testing-machine-name',
+        ),
+    )
+
+    // Servername example
+    'environmentToDetectionMethodMap' => array(
+        'production' => array(
+            'servername' => 'www.example.com',
+        ),
+        'testing' => array(
+            'servername' => 'testing.example.com',
+        ),
+
+        // or...
+        'whatever' => array(
+            'servername' => 'whatever.com',
+        ),
+        'something' => array(
+            'servername' => 'something.com',
+        ),
+    )
+
+    // Hostname and Servername example
+    'environmentToDetectionMethodMap' => array(
+        'production' => array(
+            'hostname'   => 'some-machine-name',
+            'servername' => 'www',
+        ),
+        'testing' => array(
+            'hostname'   => 'some-machine-name',
+            'servername' => 'testing',
+        ),
+    )
+
+The main thing to note here is that keys of each element within the environmentToDetectionMethodMap will be the name of the .env file that Envariable will be looking for. So, for example:
+
+    // .env.production.php
+    'production' => array(
+        'servername' => 'www.example.com',
+    ),
+
+    // .env.testing.php
+    'testing' => array(
+        'servername' => 'testing.example.com',
+    ),
+
+    // .env.whatever.php
+    'whatever' => array(
+        'servername' => 'whatever.com',
+    ),
+
 
