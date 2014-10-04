@@ -61,7 +61,7 @@ Within the Envariable config file you will see three items:
     • cliDefaultEnvironment
     • customEnvironmentConfigPath
 
-environmentToDetectionMethodMap is the main one we're concerned with here. There are two types of detection methods used: hostname and servername. You can use either one or both depending on your situation. Idealy you would use only hostname as hostname is the name of the machine that your app is running on and is not at all spoofable. But, in the situation where your app is on shared hosting and is load balanced across multiple servers, hostname will no longer suffice. In this case you'll want to stick with servername. You can use this to map just your subdomain if you'd like. A third scenario is where your hostname is stable and is safe to use, but you have multiple subdomains which all use separate database connections (as an example). In this case you can use both the hostname and the servername together. See below examples:
+environmentToDetectionMethodMap is the main one we're concerned with here. There are two types of detection methods used: hostname and servername. You can use either one or both depending on your situation. Idealy you would use only hostname as hostname is the name of the machine that your app is running on and is not at all spoofable. But, in the situation where your app is on shared hosting and is load balanced across multiple servers, hostname will no longer suffice as it will constantly change. In this case you'll want to stick with servername. You can use this to map just your subdomain if you'd like. A third scenario is where your hostname is stable and is safe to use, but you have multiple subdomains which all use separate database connections (as an example). In this case you can use both the hostname and the servername together. See below examples:
 
     // Hostname example
     'environmentToDetectionMethodMap' => array(
@@ -120,4 +120,11 @@ The main thing to note here is that keys of each element within the environmentT
         'servername' => 'whatever.com',
     ),
 
+For cliDefaultEnvironment and customEnvironmentConfigPath please refer to the notes within the Envariable config file.
 
+
+##### TODO:
+
+    • Look into adding more FrameworkCommands (essentially finger printing).
+    • Write and use custom exceptions.
+    • Write up an exception handler to pretty up exceptions and give them more of an identity.
