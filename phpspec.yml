@@ -6,6 +6,7 @@ suites:
 extensions:
     - PhpSpec\Extension\CodeCoverageExtension
 code_coverage:
-    blacklist:
-        - src/Envariable/Util
-        - src/Envariable/Config
+    blacklist_files:
+        - src/Envariable/Util/Filesystem.php
+        - src/Envariable/Util/Server.php
+        - src/Envariable/Config/ConfigTemplate.php

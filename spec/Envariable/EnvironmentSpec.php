@@ -220,7 +220,7 @@ class EnvironmentSpec extends ObjectBehavior
 
         $this->setConfiguration(array(
             'environmentToDetectionMethodMap' => array(),
-            'cliDefaultEnvironment'    => 'production',
+            'cliDefaultEnvironment'           => 'production',
         ));
         $this->setServer($server);
 
@@ -249,7 +249,7 @@ class EnvironmentSpec extends ObjectBehavior
                     'hostname' => 'this-will-not-match',
                 ),
             ),
-            'cliDefaultEnvironment'    => 'production',
+            'cliDefaultEnvironment' => 'production',
         ));
         $this->setServer($server);
         $this->setEnvironmentValidationStrategyMap(self::$environmentValidationStrategyMap);
@@ -292,4 +292,6 @@ class EnvironmentSpec extends ObjectBehavior
         $this->shouldThrow(new \Exception('Could not detect the environment.'))->duringDetect();
         $this->getDetectedEnvironment()->shouldReturn(null);
     }
+
+
 }

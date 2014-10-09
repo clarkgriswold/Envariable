@@ -164,7 +164,7 @@ One more thing to note within the .env file is that it's also possible to keep n
 
 You then access it as such:
 
-    $_ENV['SOMETHING_ELEMENT_ONE_SUB_ELEMENT_ONE'] or getenv('SOMETHING_ELEMENT_ONE_SUB_ELEMENT_ONE')
+    $_ENV['SOMETHING_ELEMENT_TWO_SUB_ELEMENT_ONE'] or getenv('SOMETHING_ELEMENT_TWO_SUB_ELEMENT_ONE')
 
 I highly doubt this will ever be needed, but it's there anyway.
 
