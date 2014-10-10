@@ -15,6 +15,11 @@ class EnvariableConfigLoader
     /**
      * @var array
      */
+    private $configMap = array();
+
+    /**
+     * @var array
+     */
     private $frameworkCommandList = array();
 
     /**
@@ -28,8 +33,8 @@ class EnvariableConfigLoader
     }
 
     /**
-     * Load the Envariable config file. If it
-     * does not exist, create it, then load it.
+     * Iterate over framework detection commands to identify an appropriate
+     * Envariable config loader and then load the config.
      *
      * @return array
      *
@@ -37,19 +42,34 @@ class EnvariableConfigLoader
      */
     public function loadConfigFile()
     {
-        foreach ($this->frameworkCommandList as $command) {
-            $configMap = $command->loadConfigFile();
-
-            // Intentially breaking Object Calisthenics here until
-            // I can find a better way of approaching this with the
-            // Chain of Command (Chain of Responsibility) pattern.
-            if ( ! $configMap) {
-                continue;
-            }
-
-            return $configMap;
+        try {
+            array_walk($this->frameworkCommandList, array($this, 'loadConfigFileCallback'));
+        } catch (\RuntimeException $runtimeException) {
+            // Do nothing. Exiting array_walk as soon as a config has been loaded.
         }
 
-        throw new \RuntimeException('Could not load Envariable config.');
+        if ( ! count($this->configMap)) {
+            throw new \RuntimeException('Could not load Envariable config.');
+        }
+
+        return $this->configMap;
+    }
+
+    /**
+     * Callback to load config file from framework detection commands.
+     *
+     * @param \Envariable\Config\FrameworkCommand\FrameworkCommandInterface $command
+     *
+     * @throws \RuntimeException
+     */
+    private function loadConfigFileCallback(FrameworkCommandInterface $command)
+    {
+        $configMap = $command->loadConfigFile();
+
+        if ($configMap) {
+            $this->configMap = $configMap;
+
+            throw new \RuntimeException('Early exit from array_walk...');
+        }
     }
 }
