@@ -54,7 +54,7 @@ class CustomConfigProcessorSpec extends ObjectBehavior
         $this->setEnvironment($environment);
         $this->setFilesystem($filesystem);
 
-        $this->shouldNotThrow('\Exception')->duringExecute();
+        $this->shouldNotThrow('\RuntimeException')->duringExecute();
 
         $this->shouldHaveEnvironmentVariable(array('SOMEPRODUCTIONDB_HOST' => 'some-host'));
         $this->shouldHaveEnvironmentVariable(array('SOMEPRODUCTIONSERVICE_EMAIL' => 'some-email-address@example.com'));
@@ -80,7 +80,7 @@ class CustomConfigProcessorSpec extends ObjectBehavior
         $this->setEnvironment($environment);
         $this->setFilesystem($filesystem);
 
-        $this->shouldNotThrow('\Exception')->duringExecute();
+        $this->shouldNotThrow('\RuntimeException')->duringExecute();
 
         $this->shouldHaveEnvironmentVariable(array('SOMEPRODUCTIONDBOUTSIDEROOT_HOST' => 'some-host'));
         $this->shouldHaveEnvironmentVariable(array('SOMEPRODUCTIONSERVICEOUTSIDEROOT_EMAIL' => 'some-email-address@example.com'));
@@ -105,7 +105,7 @@ class CustomConfigProcessorSpec extends ObjectBehavior
         $this->setEnvironment($environment);
         $this->setFilesystem($filesystem);
 
-        $this->shouldThrow(new \Exception('Could not find configuration file: [invalid_path/.env.production.php]'))->duringExecute();
+        $this->shouldThrow(new \RuntimeException('Could not find configuration file: [invalid_path/.env.production.php]'))->duringExecute();
     }
 
     /**
@@ -127,7 +127,7 @@ class CustomConfigProcessorSpec extends ObjectBehavior
         $this->setEnvironment($environment);
         $this->setFilesystem($filesystem);
 
-        $this->shouldThrow(new \Exception('Your custom environment config is empty.'))->duringExecute();
+        $this->shouldThrow(new \RuntimeException('Your custom environment config is empty.'))->duringExecute();
     }
 
     /**
@@ -150,7 +150,7 @@ class CustomConfigProcessorSpec extends ObjectBehavior
         $this->setEnvironment($environment);
         $this->setFilesystem($filesystem);
 
-        $this->shouldThrow(new \Exception('An environment variable with the key "SOMEENVDUPEDB_HOST" already exists. Aborting.'))->duringExecute();
+        $this->shouldThrow(new \RuntimeException('An environment variable with the key "SOMEENVDUPEDB_HOST" already exists. Aborting.'))->duringExecute();
     }
 
     /**
@@ -174,6 +174,6 @@ class CustomConfigProcessorSpec extends ObjectBehavior
         $this->setEnvironment($environment);
         $this->setFilesystem($filesystem);
 
-        $this->shouldThrow(new \Exception('An environment variable with the name "SOMEGETENVDUPEDB_HOST" already exists. Aborting.'))->duringExecute();
+        $this->shouldThrow(new \RuntimeException('An environment variable with the name "SOMEGETENVDUPEDB_HOST" already exists. Aborting.'))->duringExecute();
     }
 }

@@ -203,7 +203,7 @@ class EnvironmentSpec extends ObjectBehavior
         ));
         $this->setServer($server);
 
-        $this->shouldThrow(new \Exception('cliDefaultEnvironment must contain a value within Envariable config.'))->duringDetect();
+        $this->shouldThrow(new \RuntimeException('cliDefaultEnvironment must contain a value within Envariable config.'))->duringDetect();
         $this->getDetectedEnvironment()->shouldReturn(null);
     }
 
@@ -224,7 +224,7 @@ class EnvironmentSpec extends ObjectBehavior
         ));
         $this->setServer($server);
 
-        $this->shouldThrow(new \Exception('You have not defined any hostnames within the "environmentToDetectionMethodMap" array within Envariable config.'))->duringDetect();
+        $this->shouldThrow(new \RuntimeException('You have not defined any hostnames within the "environmentToDetectionMethodMap" array within Envariable config.'))->duringDetect();
         $this->getDetectedEnvironment()->shouldReturn(null);
     }
 
@@ -254,7 +254,7 @@ class EnvironmentSpec extends ObjectBehavior
         $this->setServer($server);
         $this->setEnvironmentValidationStrategyMap(self::$environmentValidationStrategyMap);
 
-        $this->shouldThrow(new \Exception('Could not detect the environment.'))->duringDetect();
+        $this->shouldThrow(new \RuntimeException('Could not detect the environment.'))->duringDetect();
         $this->getDetectedEnvironment()->shouldReturn(null);
     }
 
@@ -280,18 +280,42 @@ class EnvironmentSpec extends ObjectBehavior
                 'production' => array(
                     'hostname' => 'production.machine-name.without-servername-matching',
                 ),
-                'production-redundant-entry'    => array(
+                'production-redundant-entry' => array(
                     'hostname' => 'production.machine-name.without-servername-matching',
                 ),
             ),
-            'cliDefaultEnvironment'    => 'production',
+            'cliDefaultEnvironment' => 'production',
         ));
         $this->setServer($server);
         $this->setEnvironmentValidationStrategyMap(self::$environmentValidationStrategyMap);
 
-        $this->shouldThrow(new \Exception('Could not detect the environment.'))->duringDetect();
+        $this->shouldThrow(new \RuntimeException('Could not detect the environment.'))->duringDetect();
         $this->getDetectedEnvironment()->shouldReturn(null);
     }
 
+    /**
+     * Test that exception is thrown as hostname and servername configuration are invalid.
+     *
+     * @param \Envariable\Util\Server $server
+     */
+    function it_throws_exception_as_hostname_is_invalid(Server $server)
+    {
+        $server
+            ->getInterfaceType()
+            ->willReturn('apache2handler');
 
+        $this->setConfiguration(array(
+            'environmentToDetectionMethodMap' => array(
+                'production' => array(
+                    'misspelled-hostname-servername-key' => 'production.machine-name.without-servername-matching',
+                ),
+            ),
+            'cliDefaultEnvironment' => 'production',
+        ));
+        $this->setServer($server);
+        $this->setEnvironmentValidationStrategyMap(self::$environmentValidationStrategyMap);
+
+        $this->shouldThrow(new \RuntimeException('Invalid hostname or servername configuration.'))->duringDetect();
+        $this->getDetectedEnvironment()->shouldReturn(null);
+    }
 }

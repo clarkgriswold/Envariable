@@ -44,7 +44,7 @@ class EnvariableConfigLoaderSpec extends ObjectBehavior
         $this->addCommand(new TooHotCommand());
         $this->addCommand(new TooColdCommand());
 
-        $this->shouldThrow(new \Exception('Could not load Envariable config.'))->duringLoadConfigFile();
+        $this->shouldThrow(new \RuntimeException('Could not load Envariable config.'))->duringLoadConfigFile();
     }
 }
 

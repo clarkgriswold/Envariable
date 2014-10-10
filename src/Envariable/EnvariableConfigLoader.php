@@ -32,6 +32,8 @@ class EnvariableConfigLoader
      * does not exist, create it, then load it.
      *
      * @return array
+     *
+     * @throws \RuntimeException
      */
     public function loadConfigFile()
     {
@@ -48,6 +50,6 @@ class EnvariableConfigLoader
             return $configMap;
         }
 
-        throw new \Exception('Could not load Envariable config.');
+        throw new \RuntimeException('Could not load Envariable config.');
     }
 }

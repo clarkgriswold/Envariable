@@ -64,16 +64,16 @@ class Environment
     /**
      * Detect the environment and define the ENVIRONMENT constant.
      *
-     * @throws \Exception
+     * @throws \RuntimeException
      */
     public function detect()
     {
         if (empty($this->configMap['cliDefaultEnvironment'])) {
-            throw new \Exception('cliDefaultEnvironment must contain a value within Envariable config.');
+            throw new \RuntimeException('cliDefaultEnvironment must contain a value within Envariable config.');
         }
 
         if (empty($this->configMap['environmentToDetectionMethodMap'])) {
-            throw new \Exception('You have not defined any hostnames within the "environmentToDetectionMethodMap" array within Envariable config.');
+            throw new \RuntimeException('You have not defined any hostnames within the "environmentToDetectionMethodMap" array within Envariable config.');
         }
 
         if ($this->server->getInterfaceType() === 'cli') {
@@ -85,7 +85,7 @@ class Environment
         $result = array_filter($this->configMap['environmentToDetectionMethodMap'], array($this, 'isValidEnvironment'));
 
         if (empty($result) || count($result) > 1) {
-            throw new \Exception('Could not detect the environment.');
+            throw new \RuntimeException('Could not detect the environment.');
         }
 
         $this->environment = key($result);
@@ -97,6 +97,8 @@ class Environment
      * @param array $configMap
      *
      * @return boolean
+     *
+     * @throws \RuntimeException
      */
     private function isValidEnvironment(array $configMap)
     {
@@ -116,7 +118,7 @@ class Environment
                 break;
 
             default:
-                throw new \Exception('A validation strategy could not be found.');
+                throw new \RuntimeException('Invalid hostname or servername configuration.');
         }
 
         return $validationStrategy->validate($configMap);

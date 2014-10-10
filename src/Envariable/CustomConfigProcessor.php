@@ -61,7 +61,7 @@ class CustomConfigProcessor
      * Execute the process of iterating over the custom config and
      * storing the data within environment variables.
      *
-     * @throws \Exception
+     * @throws \RuntimeException
      */
     public function execute()
     {
@@ -74,7 +74,7 @@ class CustomConfigProcessor
         }
 
         if ( ! file_exists($customEnvironmentConfigFilePath)) {
-            throw new \Exception("Could not find configuration file: [$customEnvironmentConfigFilePath]");
+            throw new \RuntimeException("Could not find configuration file: [$customEnvironmentConfigFilePath]");
         }
 
         $this->process(require($customEnvironmentConfigFilePath));
@@ -87,7 +87,7 @@ class CustomConfigProcessor
      * @param array       $configMap
      * @param string|null $prefix
      *
-     * @throws \Exception
+     * @throws \RuntimeException
      */
     private function process(array $configMap, $prefix = null)
     {
@@ -126,14 +126,14 @@ class CustomConfigProcessor
      * @param string $key
      * @param string $value
      *
-     * @throws \Exception
+     * @throws \RuntimeException
      */
     private function defineWithinEnvSuperGlobal($prefix, $key, $value)
     {
         $key = sprintf('%s_%s', strtoupper($prefix), strtoupper($key));
 
         if (array_key_exists($key, $_ENV)) {
-            throw new \Exception('An environment variable with the key "' . $key . '" already exists. Aborting.');
+            throw new \RuntimeException('An environment variable with the key "' . $key . '" already exists. Aborting.');
         }
 
         $_ENV[$key] = $value;
@@ -146,14 +146,14 @@ class CustomConfigProcessor
      * @param string $key
      * @param string $value
      *
-     * @throws \Exception
+     * @throws \RuntimeException
      */
     private function defineWithinEnvironmentStore($prefix, $key, $value)
     {
         $environmentVariableName = sprintf('%s_%s', strtoupper($prefix), strtoupper($key));
 
         if (getenv($environmentVariableName)) {
-            throw new \Exception('An environment variable with the name "' . $environmentVariableName . '" already exists. Aborting.');
+            throw new \RuntimeException('An environment variable with the name "' . $environmentVariableName . '" already exists. Aborting.');
         }
 
         putenv(sprintf('%s=%s', $environmentVariableName, $value));
