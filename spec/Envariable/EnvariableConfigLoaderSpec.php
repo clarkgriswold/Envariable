@@ -4,7 +4,7 @@ namespace spec\Envariable;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Envariable\Config\FrameworkCommand\FrameworkCommandInterface;
+use Envariable\Config\FrameworkDetectionCommand\FrameworkDetectionCommandInterface;
 use Envariable\Util\Filesystem;
 
 /**
@@ -51,7 +51,7 @@ class EnvariableConfigLoaderSpec extends ObjectBehavior
 /**
  * TooHotCommand Stub.
  */
-class TooHotCommand implements FrameworkCommandInterface
+class TooHotCommand implements FrameworkDetectionCommandInterface
 {
     public function setFilesystem(Filesystem $filesystem) {}
 
@@ -64,7 +64,7 @@ class TooHotCommand implements FrameworkCommandInterface
 /**
  * TooColdCommand Stub.
  */
-class TooColdCommand implements FrameworkCommandInterface
+class TooColdCommand implements FrameworkDetectionCommandInterface
 {
     public function setFilesystem(Filesystem $filesystem) {}
 
@@ -77,7 +77,7 @@ class TooColdCommand implements FrameworkCommandInterface
 /**
  * JustRightCommand Stub.
  */
-class JustRightCommand implements FrameworkCommandInterface
+class JustRightCommand implements FrameworkDetectionCommandInterface
 {
     public function setFilesystem(Filesystem $filesystem) {}
 

@@ -4,7 +4,7 @@ namespace spec\Envariable;
 
 use Envariable\CustomConfigProcessor;
 use Envariable\EnvariableConfigLoader;
-use Envariable\Environment;
+use Envariable\EnvironmentDetector;
 use Envariable\Util\Server;
 use Envariable\Util\Filesystem;
 use PhpSpec\ObjectBehavior;
@@ -27,20 +27,20 @@ class EnvariableSpec extends ObjectBehavior
      *
      * @param \Envariable\CustomConfigProcessor  $customConfigProcessor
      * @param \Envariable\EnvariableConfigLoader $envariableConfigLoader
-     * @param \Envariable\Environment            $environment
+     * @param \Envariable\EnvironmentDetector    $environmentDetector
      * @param \Envariable\Util\Server            $server
      * @param \Envariable\Util\Filesystem        $filesystem
      */
     function let(
         CustomConfigProcessor $customConfigProcessor,
         EnvariableConfigLoader $envariableConfigLoader,
-        Environment $environment,
+        EnvironmentDetector $environmentDetector,
         Server $server,
         Filesystem $filesystem
     ) {
         $customConfigProcessor->beADoubleOf('Envariable\CustomConfigProcessor');
         $envariableConfigLoader->beADoubleOf('Envariable\EnvariableConfigLoader');
-        $environment->beADoubleOf('Envariable\Environment');
+        $environmentDetector->beADoubleOf('Envariable\EnvironmentDetector');
         $server->beADoubleOf('Envariable\Util\Server');
         $filesystem->beADoubleOf('Envariable\Util\Filesystem');
 
@@ -49,7 +49,7 @@ class EnvariableSpec extends ObjectBehavior
         $this->beConstructedWith(
             $customConfigProcessor,
             $this->envariableConfigLoader,
-            $environment,
+            $environmentDetector,
             $server,
             $filesystem
         );
@@ -59,9 +59,9 @@ class EnvariableSpec extends ObjectBehavior
     /**
      * Test that Envariable bootstraps all of its components
      *
-     * @param \Envariable\Environment
+     * @param \Envariable\EnvironmentDetector
      */
-    function it_executes_the_bootstrapping_of_all_of_the_envariable_components(Environment $environment)
+    function it_executes_the_bootstrapping_of_all_of_the_envariable_components(EnvironmentDetector $environmentDetector)
     {
         $this
             ->envariableConfigLoader
@@ -73,6 +73,6 @@ class EnvariableSpec extends ObjectBehavior
             ));
 
         $this->execute();
-        $this->getEnvironment()->shouldReturn($environment);
+        $this->getEnvironmentDetector()->shouldReturn($environmentDetector);
     }
 }

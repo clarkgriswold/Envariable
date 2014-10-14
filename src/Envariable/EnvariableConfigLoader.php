@@ -2,7 +2,7 @@
 
 namespace Envariable;
 
-use Envariable\Config\FrameworkCommand\FrameworkCommandInterface;
+use Envariable\Config\FrameworkDetectionCommand\FrameworkDetectionCommandInterface;
 use Envariable\Util\Filesystem;
 
 /**
@@ -20,16 +20,16 @@ class EnvariableConfigLoader
     /**
      * @var array
      */
-    private $frameworkCommandList = array();
+    private $frameworkDetectionCommandList = array();
 
     /**
      * Add a command to the framework command list.
      *
-     * @param \Envariable\Config\FrameworkCommand\FrameworkCommandInterface $command
+     * @param \Envariable\Config\FrameworkDetectionCommand\FrameworkDetectionCommandInterface $command
      */
-    public function addCommand(FrameworkCommandInterface $command)
+    public function addCommand(FrameworkDetectionCommandInterface $command)
     {
-        $this->frameworkCommandList[] = $command;
+        $this->frameworkDetectionCommandList[] = $command;
     }
 
     /**
@@ -43,7 +43,7 @@ class EnvariableConfigLoader
     public function loadConfigFile()
     {
         try {
-            array_walk($this->frameworkCommandList, array($this, 'loadConfigFileCallback'));
+            array_walk($this->frameworkDetectionCommandList, array($this, 'loadConfigFileCallback'));
         } catch (\RuntimeException $runtimeException) {
             // Do nothing. Exiting array_walk as soon as a config has been loaded.
         }
@@ -58,11 +58,11 @@ class EnvariableConfigLoader
     /**
      * Callback to load config file from framework detection commands.
      *
-     * @param \Envariable\Config\FrameworkCommand\FrameworkCommandInterface $command
+     * @param \Envariable\Config\FrameworkDetectionCommand\FrameworkDetectionCommandInterface $command
      *
      * @throws \RuntimeException
      */
-    private function loadConfigFileCallback(FrameworkCommandInterface $command)
+    private function loadConfigFileCallback(FrameworkDetectionCommandInterface $command)
     {
         $configMap = $command->loadConfigFile();
 

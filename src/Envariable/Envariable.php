@@ -2,11 +2,11 @@
 
 namespace Envariable;
 
-use Envariable\Config\FrameworkCommand\CodeIgniterCommand;
-use Envariable\Config\FrameworkCommand\FrameworkCommandInterface;
+use Envariable\Config\FrameworkDetectionCommand\CodeIgniterDetectionCommand;
+use Envariable\Config\FrameworkDetectionCommand\FrameworkDetectionCommandInterface;
 use Envariable\CustomConfigProcessor;
 use Envariable\EnvariableConfigLoader;
-use Envariable\Environment;
+use Envariable\EnvironmentDetector;
 use Envariable\HostnameStrategy;
 use Envariable\HostnameServernameStrategy;
 use Envariable\ServernameStrategy;
@@ -31,9 +31,9 @@ class Envariable
     private $envariableConfigLoader;
 
     /**
-     * @var \Envariable\Environment
+     * @var \Envariable\EnvironmentDetector
      */
-    private $environment;
+    private $environmentDetector;
 
     /**
      * @var \Envariable\Util\Server
@@ -48,41 +48,41 @@ class Envariable
     /**
      * @param \Envariable\CustomConfigProcessor|null  $customConfigProcessor
      * @param \Envariable\EnvariableConfigLoader|null $envariableConfigLoader
-     * @param \Envariable\Environment|null            $environment
+     * @param \Envariable\EnvironmentDetector|null    $environmentDetector
      * @param \Envariable\Util\Server|null            $server
      * @param \Envariable\Util\Filesystem|null        $filesystem
      */
     public function __construct(
         CustomConfigProcessor $customConfigProcessor = null,
         EnvariableConfigLoader $envariableConfigLoader = null,
-        Environment $environment = null,
+        EnvironmentDetector $environmentDetector = null,
         Server $server = null,
         Filesystem $filesystem = null
     ) {
         $this->customConfigProcessor  = $customConfigProcessor ?: new CustomConfigProcessor();
         $this->envariableConfigLoader = $envariableConfigLoader ?: new EnvariableConfigLoader();
-        $this->environment            = $environment ?: new Environment();
+        $this->environmentDetector    = $environmentDetector ?: new EnvironmentDetector();
         $this->server                 = $server ?: new Server();
         $this->filesystem             = $filesystem ?: new Filesystem();
 
-        $frameworkCommandList = array(
-            new CodeIgniterCommand(),
+        $frameworkDetectionCommandList = array(
+            new CodeIgniterDetectionCommand(),
             // Add more commands here...
         );
 
-        array_map(array($this, 'addCommandCallback'), $frameworkCommandList);
+        array_map(array($this, 'addCommandCallback'), $frameworkDetectionCommandList);
     }
 
     /**
      * Add command callback.
      *
-     * @param \Envariable\Config\FrameworkCommand\FrameworkCommandInterface $command
+     * @param \Envariable\Config\FrameworkDetectionCommand\FrameworkDetectionCommandInterface $command
      */
-    private function addCommandCallback(FrameworkCommandInterface $frameworkCommand)
+    private function addCommandCallback(FrameworkDetectionCommandInterface $frameworkDetectionCommand)
     {
-        $frameworkCommand->setFilesystem($this->filesystem);
+        $frameworkDetectionCommand->setFilesystem($this->filesystem);
 
-        $this->envariableConfigLoader->addCommand($frameworkCommand);
+        $this->envariableConfigLoader->addCommand($frameworkDetectionCommand);
     }
 
     /**
@@ -92,16 +92,16 @@ class Envariable
     {
         $configMap = $this->envariableConfigLoader->loadConfigFile();
 
-        $this->initializeAndInvokeEnvironment($configMap);
+        $this->initializeAndInvokeEnvironmentDetector($configMap);
         $this->initializeAndInvokeConfigurationProcessor($configMap);
     }
 
     /**
-     * Initialize Environment and run it.
+     * Initialize EnvironmentDetector and run it.
      *
      * @param array $configMap
      */
-    private function initializeAndInvokeEnvironment(array $configMap)
+    private function initializeAndInvokeEnvironmentDetector(array $configMap)
     {
         $setEnvironmentValidationStrategyMap = array(
             'HostnameStrategy'           => new HostnameStrategy(),
@@ -109,11 +109,11 @@ class Envariable
             'ServernameStrategy'         => new ServernameStrategy(),
         );
 
-        $this->environment->setConfiguration($configMap);
-        $this->environment->setServer($this->server);
-        $this->environment->setEnvironmentValidationStrategyMap($setEnvironmentValidationStrategyMap);
+        $this->environmentDetector->setConfiguration($configMap);
+        $this->environmentDetector->setServer($this->server);
+        $this->environmentDetector->setEnvironmentValidationStrategyMap($setEnvironmentValidationStrategyMap);
 
-        $this->environment->detect();
+        $this->environmentDetector->detect();
     }
 
     /**
@@ -125,18 +125,18 @@ class Envariable
     {
         $this->customConfigProcessor->setConfiguration($configMap);
         $this->customConfigProcessor->setFilesystem($this->filesystem);
-        $this->customConfigProcessor->setEnvironment($this->environment->getDetectedEnvironment());
+        $this->customConfigProcessor->setEnvironment($this->environmentDetector->getEnvironment());
 
         $this->customConfigProcessor->execute();
     }
 
     /**
-     * Retrieve the Environment instance.
+     * Retrieve the EnvironmentDetector instance.
      *
-     * @return \Envariable\Environment
+     * @return \Envariable\EnvironmentDetector
      */
-    public function getEnvironment()
+    public function getEnvironmentDetector()
     {
-        return $this->environment;
+        return $this->environmentDetector;
     }
 }

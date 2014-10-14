@@ -10,11 +10,11 @@ use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
 /**
- * Environment Test.
+ * Environment Detector Test.
  *
  * @author Mark Kasaboski <mark.kasaboski@gmail.com>
  */
-class EnvironmentSpec extends ObjectBehavior
+class EnvironmentDetectorSpec extends ObjectBehavior
 {
     /**
      * @var array
@@ -59,11 +59,11 @@ class EnvironmentSpec extends ObjectBehavior
      */
     function it_is_initializable()
     {
-        $this->shouldHaveType('Envariable\Environment');
+        $this->shouldHaveType('Envariable\EnvironmentDetector');
     }
 
     /**
-     * Test that exception not thrown and that getDetectedEnvironment returns 'production-without-servername-matching'.
+     * Test that exception not thrown and that getEnvironment returns 'production-without-servername-matching'.
      *
      * @param \Envariable\Util\Server $server
      */
@@ -84,11 +84,11 @@ class EnvironmentSpec extends ObjectBehavior
         $this->setEnvironmentValidationStrategyMap(self::$environmentValidationStrategyMap);
 
         $this->shouldNotThrow('\Exception')->duringDetect();
-        $this->getDetectedEnvironment()->shouldReturn('production-without-servername-matching');
+        $this->getEnvironment()->shouldReturn('production-without-servername-matching');
     }
 
     /**
-     * Test that exception not thrown and that getDetectedEnvironment returns 'production-with-servername-matching'.
+     * Test that exception not thrown and that getEnvironment returns 'production-with-servername-matching'.
      *
      * @param \Envariable\Util\Server $server
      */
@@ -109,11 +109,11 @@ class EnvironmentSpec extends ObjectBehavior
         $this->setEnvironmentValidationStrategyMap(self::$environmentValidationStrategyMap);
 
         $this->shouldNotThrow('\Exception')->duringDetect();
-        $this->getDetectedEnvironment()->shouldReturn('production-with-servername-matching');
+        $this->getEnvironment()->shouldReturn('production-with-servername-matching');
     }
 
     /**
-     * Test that exception not thrown and that getDetectedEnvironment returns 'testing-with-servername-matching'.
+     * Test that exception not thrown and that getEnvironment returns 'testing-with-servername-matching'.
      *
      * @param \Envariable\Util\Server $server
      */
@@ -134,11 +134,11 @@ class EnvironmentSpec extends ObjectBehavior
         $this->setEnvironmentValidationStrategyMap(self::$environmentValidationStrategyMap);
 
         $this->shouldNotThrow('\Exception')->duringDetect();
-        $this->getDetectedEnvironment()->shouldReturn('testing-with-servername-matching');
+        $this->getEnvironment()->shouldReturn('testing-with-servername-matching');
     }
 
     /**
-     * Test that exception not thrown and that getDetectedEnvironment returns 'staging-without-hostname-matching'.
+     * Test that exception not thrown and that getEnvironment returns 'staging-without-hostname-matching'.
      *
      * @param \Envariable\Util\Server $server
      */
@@ -159,11 +159,11 @@ class EnvironmentSpec extends ObjectBehavior
         $this->setEnvironmentValidationStrategyMap(self::$environmentValidationStrategyMap);
 
         $this->shouldNotThrow('\Exception')->duringDetect();
-        $this->getDetectedEnvironment()->shouldReturn('staging-without-hostname-matching');
+        $this->getEnvironment()->shouldReturn('staging-without-hostname-matching');
     }
 
     /**
-     * Test that exception not thrown and that getDetectedEnvironment returns 'production' in CLI mode.
+     * Test that exception not thrown and that getEnvironment returns 'production' in CLI mode.
      *
      * @param \Envariable\Util\Server $server
      */
@@ -184,7 +184,7 @@ class EnvironmentSpec extends ObjectBehavior
         $this->setEnvironmentValidationStrategyMap(self::$environmentValidationStrategyMap);
 
         $this->shouldNotThrow('\Exception')->duringDetect();
-        $this->getDetectedEnvironment()->shouldReturn('production');
+        $this->getEnvironment()->shouldReturn('production');
     }
 
     /**
@@ -204,7 +204,7 @@ class EnvironmentSpec extends ObjectBehavior
         $this->setServer($server);
 
         $this->shouldThrow(new \RuntimeException('cliDefaultEnvironment must contain a value within Envariable config.'))->duringDetect();
-        $this->getDetectedEnvironment()->shouldReturn(null);
+        $this->getEnvironment()->shouldReturn(null);
     }
 
     /**
@@ -225,7 +225,7 @@ class EnvironmentSpec extends ObjectBehavior
         $this->setServer($server);
 
         $this->shouldThrow(new \RuntimeException('You have not defined any hostnames within the "environmentToDetectionMethodMap" array within Envariable config.'))->duringDetect();
-        $this->getDetectedEnvironment()->shouldReturn(null);
+        $this->getEnvironment()->shouldReturn(null);
     }
 
     /**
@@ -255,7 +255,7 @@ class EnvironmentSpec extends ObjectBehavior
         $this->setEnvironmentValidationStrategyMap(self::$environmentValidationStrategyMap);
 
         $this->shouldThrow(new \RuntimeException('Could not detect the environment.'))->duringDetect();
-        $this->getDetectedEnvironment()->shouldReturn(null);
+        $this->getEnvironment()->shouldReturn(null);
     }
 
     /**
@@ -290,7 +290,7 @@ class EnvironmentSpec extends ObjectBehavior
         $this->setEnvironmentValidationStrategyMap(self::$environmentValidationStrategyMap);
 
         $this->shouldThrow(new \RuntimeException('Could not detect the environment.'))->duringDetect();
-        $this->getDetectedEnvironment()->shouldReturn(null);
+        $this->getEnvironment()->shouldReturn(null);
     }
 
     /**
@@ -316,6 +316,6 @@ class EnvironmentSpec extends ObjectBehavior
         $this->setEnvironmentValidationStrategyMap(self::$environmentValidationStrategyMap);
 
         $this->shouldThrow(new \RuntimeException('Invalid hostname or servername configuration.'))->duringDetect();
-        $this->getDetectedEnvironment()->shouldReturn(null);
+        $this->getEnvironment()->shouldReturn(null);
     }
 }

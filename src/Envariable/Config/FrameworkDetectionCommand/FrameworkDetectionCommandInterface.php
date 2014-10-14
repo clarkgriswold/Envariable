@@ -1,14 +1,15 @@
 <?php
 
-namespace Envariable\Config\FrameworkCommand;
+namespace Envariable\Config\FrameworkDetectionCommand;
 
 use Envariable\Util\Filesystem;
 
 /**
+ * Framework Detection Command Interface.
  *
  * @author Mark Kasaboski <mark.kasaboski@gmail.com>
  */
-interface FrameworkCommandInterface
+interface FrameworkDetectionCommandInterface
 {
     /**
      * Define the Filesystem utility.
