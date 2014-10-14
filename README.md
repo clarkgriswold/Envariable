@@ -48,7 +48,7 @@ Then, just below that add:
 
 Then, where CodeIgniter defines the ENVIRONMENT constant, change that to this:
 
-    define('ENVIRONMENT', $envariable->getEnvironment()->getDetectedEnvironment());
+    define('ENVIRONMENT', $envariable->getEnvironmentDetector()->getEnvironment());
 
 
 Upon reloading the site you will now see an exception being thrown. Obviously you will only see the exception if you have error reporting enabled.

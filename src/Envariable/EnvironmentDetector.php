@@ -5,11 +5,11 @@ namespace Envariable;
 use Envariable\Util\Server;
 
 /**
- * Detect and Define the Environment.
+ * Environment Detector.
  *
  * @author Mark Kasaboski <mark.kasaboski@gmail.com>
  */
-class Environment
+class EnvironmentDetector
 {
     /**
      * @var array
@@ -129,7 +129,7 @@ class Environment
      *
      * @return string
      */
-    public function getDetectedEnvironment()
+    public function getEnvironment()
     {
         return $this->environment;
     }
