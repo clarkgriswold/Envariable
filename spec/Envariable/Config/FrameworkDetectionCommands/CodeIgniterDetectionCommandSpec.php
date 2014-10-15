@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\Envariable\Config\FrameworkDetectionCommand;
+namespace spec\Envariable\Config\FrameworkDetectionCommands;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;

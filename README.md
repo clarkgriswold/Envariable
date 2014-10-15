@@ -173,6 +173,6 @@ For more details on cliDefaultEnvironment and customEnvironmentConfigPath please
 
 ##### TODO:
 
-    • Look into adding more FrameworkCommands (essentially finger printing).
-    • Write and use custom exceptions.
-    • Write up an exception handler to pretty up exceptions and give them more of an identity.
+* [ ] Look into adding more framework detection commands.
+* [ ] Implement custom exceptions.
+* [ ] Implement an exception handler to pretty up exceptions and give Envariable more of an identity.
