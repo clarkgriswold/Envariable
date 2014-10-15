@@ -2,7 +2,7 @@
 
 namespace Envariable;
 
-use Envariable\Config\FrameworkDetectionCommand\FrameworkDetectionCommandInterface;
+use Envariable\Config\FrameworkDetectionCommands\FrameworkDetectionCommandInterface;
 use Envariable\Util\Filesystem;
 
 /**
@@ -25,7 +25,7 @@ class EnvariableConfigLoader
     /**
      * Add a command to the framework command list.
      *
-     * @param \Envariable\Config\FrameworkDetectionCommand\FrameworkDetectionCommandInterface $command
+     * @param \Envariable\Config\FrameworkDetectionCommands\FrameworkDetectionCommandInterface $command
      */
     public function addCommand(FrameworkDetectionCommandInterface $command)
     {
@@ -58,7 +58,7 @@ class EnvariableConfigLoader
     /**
      * Callback to load config file from framework detection commands.
      *
-     * @param \Envariable\Config\FrameworkDetectionCommand\FrameworkDetectionCommandInterface $command
+     * @param \Envariable\Config\FrameworkDetectionCommands\FrameworkDetectionCommandInterface $command
      *
      * @throws \RuntimeException
      */

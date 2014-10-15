@@ -1,6 +1,6 @@
 <?php
 
-namespace Envariable\Config\FrameworkDetectionCommand;
+namespace Envariable\Config\FrameworkDetectionCommands;
 
 use Envariable\Util\Filesystem;
 

@@ -2,8 +2,8 @@
 
 namespace Envariable;
 
-use Envariable\Config\FrameworkDetectionCommand\CodeIgniterDetectionCommand;
-use Envariable\Config\FrameworkDetectionCommand\FrameworkDetectionCommandInterface;
+use Envariable\Config\FrameworkDetectionCommands\CodeIgniterDetectionCommand;
+use Envariable\Config\FrameworkDetectionCommands\FrameworkDetectionCommandInterface;
 use Envariable\CustomConfigProcessor;
 use Envariable\EnvariableConfigLoader;
 use Envariable\EnvironmentDetector;
@@ -76,7 +76,7 @@ class Envariable
     /**
      * Add command callback.
      *
-     * @param \Envariable\Config\FrameworkDetectionCommand\FrameworkDetectionCommandInterface $command
+     * @param \Envariable\Config\FrameworkDetectionCommands\FrameworkDetectionCommandInterface $command
      */
     private function addCommandCallback(FrameworkDetectionCommandInterface $frameworkDetectionCommand)
     {

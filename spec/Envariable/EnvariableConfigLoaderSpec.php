@@ -4,7 +4,7 @@ namespace spec\Envariable;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Envariable\Config\FrameworkDetectionCommand\FrameworkDetectionCommandInterface;
+use Envariable\Config\FrameworkDetectionCommands\FrameworkDetectionCommandInterface;
 use Envariable\Util\Filesystem;
 
 /**

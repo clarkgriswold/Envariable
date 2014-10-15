@@ -1,8 +1,8 @@
 <?php
 
-namespace Envariable\Config\FrameworkDetectionCommand;
+namespace Envariable\Config\FrameworkDetectionCommands;
 
-use Envariable\Config\FrameworkDetectionCommand\FrameworkDetectionCommandInterface;
+use Envariable\Config\FrameworkDetectionCommands\FrameworkDetectionCommandInterface;
 use Envariable\Util\Filesystem;
 
 /**

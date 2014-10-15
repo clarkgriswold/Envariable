@@ -9,7 +9,7 @@ class CodeIgniterDetectionCommandSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType('Envariable\Config\FrameworkDetectionCommand\CodeIgniterDetectionCommand');
+        $this->shouldHaveType('Envariable\Config\FrameworkDetectionCommands\CodeIgniterDetectionCommand');
     }
 
     /**
