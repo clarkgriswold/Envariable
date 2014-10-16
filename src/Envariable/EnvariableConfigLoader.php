@@ -3,7 +3,6 @@
 namespace Envariable;
 
 use Envariable\Config\FrameworkDetectionCommands\FrameworkDetectionCommandInterface;
-use Envariable\Util\Filesystem;
 
 /**
  * Envariable Config Loader.
