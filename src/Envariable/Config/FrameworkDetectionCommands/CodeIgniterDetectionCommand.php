@@ -50,13 +50,13 @@ class CodeIgniterDetectionCommand implements FrameworkDetectionCommandInterface
         $this->applicationRootPath         = $this->filesystem->getApplicationRootPath();
         $this->applicationConfigFolderPath = sprintf('%s%sapplication%sconfig', $this->applicationRootPath, self::DS, self::DS);
 
-        if ( ! $this->filesystem->fileExists($this->applicationConfigFolderPath) && ! $this->determineApplicationConfigFolderPath()) {
+        if ( ! file_exists($this->applicationConfigFolderPath) && ! $this->determineApplicationConfigFolderPath()) {
             return false;
         }
 
         $configFilePath = sprintf('%s%sEnvariable%sconfig.php', $this->applicationConfigFolderPath, self::DS, self::DS);
 
-        if ( ! $this->filesystem->fileExists($configFilePath)) {
+        if ( ! file_exists($configFilePath)) {
             $this->createConfigFile();
         }
 
@@ -102,7 +102,7 @@ class CodeIgniterDetectionCommand implements FrameworkDetectionCommandInterface
     {
         $configFolderPathCandidate = sprintf('%s%sconfig', $applicationRootPathCandidate, self::DS);
 
-        if ($this->filesystem->fileExists($configFolderPathCandidate)) {
+        if (file_exists($configFolderPathCandidate)) {
             $this->applicationConfigFolderPath = $configFolderPathCandidate;
 
             return true;
