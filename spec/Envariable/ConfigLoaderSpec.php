@@ -12,14 +12,14 @@ use Envariable\Util\Filesystem;
  *
  * @author Mark Kasaboski <mark.kasaboski@gmail.com>
  */
-class EnvariableConfigLoaderSpec extends ObjectBehavior
+class ConfigLoaderSpec extends ObjectBehavior
 {
     /**
      * Test that the SUT is initializable.
      */
     function it_is_initializable()
     {
-        $this->shouldHaveType('Envariable\EnvariableConfigLoader');
+        $this->shouldHaveType('Envariable\ConfigLoader');
     }
 
     /**

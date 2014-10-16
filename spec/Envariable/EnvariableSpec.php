@@ -3,7 +3,7 @@
 namespace spec\Envariable;
 
 use Envariable\DotEnvConfigProcessor;
-use Envariable\EnvariableConfigLoader;
+use Envariable\ConfigLoader;
 use Envariable\EnvironmentDetector;
 use Envariable\Util\Server;
 use Envariable\Util\Filesystem;
@@ -18,37 +18,37 @@ use Prophecy\Argument;
 class EnvariableSpec extends ObjectBehavior
 {
     /**
-     * @var \Envariable\EnvariableConfigLoader
+     * @var \Envariable\ConfigLoader
      */
-    private $envariableConfigLoader;
+    private $configLoader;
 
     /**
      * Pre-test setup.
      *
-     * @param \Envariable\DotEnvConfigProcessor  $dotEnvConfigProcessor
-     * @param \Envariable\EnvariableConfigLoader $envariableConfigLoader
-     * @param \Envariable\EnvironmentDetector    $environmentDetector
-     * @param \Envariable\Util\Server            $server
-     * @param \Envariable\Util\Filesystem        $filesystem
+     * @param \Envariable\DotEnvConfigProcessor $dotEnvConfigProcessor
+     * @param \Envariable\ConfigLoader          $configLoader
+     * @param \Envariable\EnvironmentDetector   $environmentDetector
+     * @param \Envariable\Util\Server           $server
+     * @param \Envariable\Util\Filesystem       $filesystem
      */
     function let(
         DotEnvConfigProcessor $dotEnvConfigProcessor,
-        EnvariableConfigLoader $envariableConfigLoader,
+        ConfigLoader $configLoader,
         EnvironmentDetector $environmentDetector,
         Server $server,
         Filesystem $filesystem
     ) {
         $dotEnvConfigProcessor->beADoubleOf('Envariable\DotEnvConfigProcessor');
-        $envariableConfigLoader->beADoubleOf('Envariable\EnvariableConfigLoader');
+        $configLoader->beADoubleOf('Envariable\ConfigLoader');
         $environmentDetector->beADoubleOf('Envariable\EnvironmentDetector');
         $server->beADoubleOf('Envariable\Util\Server');
         $filesystem->beADoubleOf('Envariable\Util\Filesystem');
 
-        $this->envariableConfigLoader = $envariableConfigLoader;
+        $this->configLoader = $configLoader;
 
         $this->beConstructedWith(
             $dotEnvConfigProcessor,
-            $this->envariableConfigLoader,
+            $this->configLoader,
             $environmentDetector,
             $server,
             $filesystem
@@ -64,7 +64,7 @@ class EnvariableSpec extends ObjectBehavior
     function it_executes_the_bootstrapping_of_all_of_the_envariable_components(EnvironmentDetector $environmentDetector)
     {
         $this
-            ->envariableConfigLoader
+            ->configLoader
             ->loadConfigFile()
             ->willReturn(array(
                 'production' => array(

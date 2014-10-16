@@ -9,7 +9,7 @@ use Envariable\Config\FrameworkDetectionCommands\FrameworkDetectionCommandInterf
  *
  * @author Mark Kasaboski <mark.kasaboski@gmail.com>
  */
-class EnvariableConfigLoader
+class ConfigLoader
 {
     /**
      * @var array

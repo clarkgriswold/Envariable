@@ -5,7 +5,7 @@ namespace Envariable;
 use Envariable\Config\FrameworkDetectionCommands\CodeIgniterDetectionCommand;
 use Envariable\Config\FrameworkDetectionCommands\FrameworkDetectionCommandInterface;
 use Envariable\DotEnvConfigProcessor;
-use Envariable\EnvariableConfigLoader;
+use Envariable\ConfigLoader;
 use Envariable\EnvironmentDetector;
 use Envariable\HostnameStrategy;
 use Envariable\HostnameServernameStrategy;
@@ -26,9 +26,9 @@ class Envariable
     private $dotEnvConfigProcessor;
 
     /**
-     * @var \Envariable\EnvariableConfigLoader;
+     * @var \Envariable\ConfigLoader;
      */
-    private $envariableConfigLoader;
+    private $configLoader;
 
     /**
      * @var \Envariable\EnvironmentDetector
@@ -46,21 +46,21 @@ class Envariable
     private $filesystem;
 
     /**
-     * @param \Envariable\DotEnvConfigProcessor|null  $dotEnvConfigProcessor
-     * @param \Envariable\EnvariableConfigLoader|null $envariableConfigLoader
-     * @param \Envariable\EnvironmentDetector|null    $environmentDetector
-     * @param \Envariable\Util\Server|null            $server
-     * @param \Envariable\Util\Filesystem|null        $filesystem
+     * @param \Envariable\DotEnvConfigProcessor|null $dotEnvConfigProcessor
+     * @param \Envariable\ConfigLoader|null          $configLoader
+     * @param \Envariable\EnvironmentDetector|null   $environmentDetector
+     * @param \Envariable\Util\Server|null           $server
+     * @param \Envariable\Util\Filesystem|null       $filesystem
      */
     public function __construct(
         DotEnvConfigProcessor $dotEnvConfigProcessor = null,
-        EnvariableConfigLoader $envariableConfigLoader = null,
+        ConfigLoader $configLoader = null,
         EnvironmentDetector $environmentDetector = null,
         Server $server = null,
         Filesystem $filesystem = null
     ) {
         $this->dotEnvConfigProcessor  = $dotEnvConfigProcessor ?: new DotEnvConfigProcessor();
-        $this->envariableConfigLoader = $envariableConfigLoader ?: new EnvariableConfigLoader();
+        $this->configLoader           = $configLoader ?: new ConfigLoader();
         $this->environmentDetector    = $environmentDetector ?: new EnvironmentDetector();
         $this->server                 = $server ?: new Server();
         $this->filesystem             = $filesystem ?: new Filesystem();
@@ -82,7 +82,7 @@ class Envariable
     {
         $frameworkDetectionCommand->setFilesystem($this->filesystem);
 
-        $this->envariableConfigLoader->addCommand($frameworkDetectionCommand);
+        $this->configLoader->addCommand($frameworkDetectionCommand);
     }
 
     /**
@@ -90,7 +90,7 @@ class Envariable
      */
     public function execute()
     {
-        $configMap = $this->envariableConfigLoader->loadConfigFile();
+        $configMap = $this->configLoader->loadConfigFile();
 
         $this->initializeAndInvokeEnvironmentDetector($configMap);
         $this->initializeAndInvokeDotEnvConfigProcessor($configMap);
