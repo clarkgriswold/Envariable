@@ -4,7 +4,7 @@ namespace Envariable;
 
 use Envariable\Config\FrameworkDetectionCommands\CodeIgniterDetectionCommand;
 use Envariable\Config\FrameworkDetectionCommands\FrameworkDetectionCommandInterface;
-use Envariable\CustomConfigProcessor;
+use Envariable\DotEnvConfigProcessor;
 use Envariable\EnvariableConfigLoader;
 use Envariable\EnvironmentDetector;
 use Envariable\HostnameStrategy;
@@ -21,9 +21,9 @@ use Envariable\Util\Server;
 class Envariable
 {
     /**
-     * @var \Envariable\CustomConfigProcessor
+     * @var \Envariable\DotEnvConfigProcessor
      */
-    private $customConfigProcessor;
+    private $dotEnvConfigProcessor;
 
     /**
      * @var \Envariable\EnvariableConfigLoader;
@@ -46,20 +46,20 @@ class Envariable
     private $filesystem;
 
     /**
-     * @param \Envariable\CustomConfigProcessor|null  $customConfigProcessor
+     * @param \Envariable\DotEnvConfigProcessor|null  $dotEnvConfigProcessor
      * @param \Envariable\EnvariableConfigLoader|null $envariableConfigLoader
      * @param \Envariable\EnvironmentDetector|null    $environmentDetector
      * @param \Envariable\Util\Server|null            $server
      * @param \Envariable\Util\Filesystem|null        $filesystem
      */
     public function __construct(
-        CustomConfigProcessor $customConfigProcessor = null,
+        DotEnvConfigProcessor $dotEnvConfigProcessor = null,
         EnvariableConfigLoader $envariableConfigLoader = null,
         EnvironmentDetector $environmentDetector = null,
         Server $server = null,
         Filesystem $filesystem = null
     ) {
-        $this->customConfigProcessor  = $customConfigProcessor ?: new CustomConfigProcessor();
+        $this->dotEnvConfigProcessor  = $dotEnvConfigProcessor ?: new DotEnvConfigProcessor();
         $this->envariableConfigLoader = $envariableConfigLoader ?: new EnvariableConfigLoader();
         $this->environmentDetector    = $environmentDetector ?: new EnvironmentDetector();
         $this->server                 = $server ?: new Server();
@@ -93,7 +93,7 @@ class Envariable
         $configMap = $this->envariableConfigLoader->loadConfigFile();
 
         $this->initializeAndInvokeEnvironmentDetector($configMap);
-        $this->initializeAndInvokeConfigurationProcessor($configMap);
+        $this->initializeAndInvokeDotEnvConfigProcessor($configMap);
     }
 
     /**
@@ -117,17 +117,17 @@ class Envariable
     }
 
     /**
-     * Initialize CustomConfigProcessor and run it.
+     * Initialize DotEnvConfigProcessor and run it.
      *
      * @param array $configMap
      */
-    private function initializeAndInvokeConfigurationProcessor(array $configMap)
+    private function initializeAndInvokeDotEnvConfigProcessor(array $configMap)
     {
-        $this->customConfigProcessor->setConfiguration($configMap);
-        $this->customConfigProcessor->setFilesystem($this->filesystem);
-        $this->customConfigProcessor->setEnvironment($this->environmentDetector->getEnvironment());
+        $this->dotEnvConfigProcessor->setConfiguration($configMap);
+        $this->dotEnvConfigProcessor->setFilesystem($this->filesystem);
+        $this->dotEnvConfigProcessor->setEnvironment($this->environmentDetector->getEnvironment());
 
-        $this->customConfigProcessor->execute();
+        $this->dotEnvConfigProcessor->execute();
     }
 
     /**

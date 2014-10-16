@@ -2,7 +2,7 @@
 
 namespace spec\Envariable;
 
-use Envariable\CustomConfigProcessor;
+use Envariable\DotEnvConfigProcessor;
 use Envariable\EnvariableConfigLoader;
 use Envariable\EnvironmentDetector;
 use Envariable\Util\Server;
@@ -25,20 +25,20 @@ class EnvariableSpec extends ObjectBehavior
     /**
      * Pre-test setup.
      *
-     * @param \Envariable\CustomConfigProcessor  $customConfigProcessor
+     * @param \Envariable\DotEnvConfigProcessor  $dotEnvConfigProcessor
      * @param \Envariable\EnvariableConfigLoader $envariableConfigLoader
      * @param \Envariable\EnvironmentDetector    $environmentDetector
      * @param \Envariable\Util\Server            $server
      * @param \Envariable\Util\Filesystem        $filesystem
      */
     function let(
-        CustomConfigProcessor $customConfigProcessor,
+        DotEnvConfigProcessor $dotEnvConfigProcessor,
         EnvariableConfigLoader $envariableConfigLoader,
         EnvironmentDetector $environmentDetector,
         Server $server,
         Filesystem $filesystem
     ) {
-        $customConfigProcessor->beADoubleOf('Envariable\CustomConfigProcessor');
+        $dotEnvConfigProcessor->beADoubleOf('Envariable\DotEnvConfigProcessor');
         $envariableConfigLoader->beADoubleOf('Envariable\EnvariableConfigLoader');
         $environmentDetector->beADoubleOf('Envariable\EnvironmentDetector');
         $server->beADoubleOf('Envariable\Util\Server');
@@ -47,7 +47,7 @@ class EnvariableSpec extends ObjectBehavior
         $this->envariableConfigLoader = $envariableConfigLoader;
 
         $this->beConstructedWith(
-            $customConfigProcessor,
+            $dotEnvConfigProcessor,
             $this->envariableConfigLoader,
             $environmentDetector,
             $server,

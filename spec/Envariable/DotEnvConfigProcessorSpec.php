@@ -7,11 +7,11 @@ use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
 /**
- * Custom Config Processor Test.
+ * .env Config Processor Test.
  *
  * @author Mark kasaboski <mark.kasaboski@gmail.com>
  */
-class CustomConfigProcessorSpec extends ObjectBehavior
+class DotEnvConfigProcessorSpec extends ObjectBehavior
 {
     /**
      * {@inheritdoc}
@@ -32,7 +32,7 @@ class CustomConfigProcessorSpec extends ObjectBehavior
      */
     function it_is_initializable()
     {
-        $this->shouldHaveType('Envariable\CustomConfigProcessor');
+        $this->shouldHaveType('Envariable\DotEnvConfigProcessor');
     }
 
     /**

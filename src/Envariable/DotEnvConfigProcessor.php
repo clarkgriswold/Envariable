@@ -5,12 +5,12 @@ namespace Envariable;
 use Envariable\Util\Filesystem;
 
 /**
- * Process the custom environment config and store them within
- * the $_ENV superglobal as well as the environment store (putenv).
+ * Process the .env config file into the the $_ENV superglobal
+ * as well as the environment store (putenv).
  *
  * @author Mark Kasaboski <mark.kasaboski@gmail.com>
  */
-class CustomConfigProcessor
+class DotEnvConfigProcessor
 {
     /**
      * @var array
