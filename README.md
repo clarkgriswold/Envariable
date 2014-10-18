@@ -1,7 +1,7 @@
 ENVARIABLE
 ----------
 
-##### A better way to keep environment variables outside of your project -- and outside of version control -- while keeping them available to the CLI (e.g., cron jobs).
+##### Keep environment variables outside of your project -- and outside of version control -- while keeping them available to the CLI (e.g., cron jobs).
 
 
 ##### Why does this exist?
