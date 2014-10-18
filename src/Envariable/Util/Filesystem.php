@@ -82,4 +82,16 @@ class Filesystem
     {
         return copy($target, $destination);
     }
+
+    /**
+     * Wrapper for file_exists().
+     *
+     * @param string $filePath
+     *
+     * @return boolean
+     */
+    public function fileExists($filePath)
+    {
+        return file_exists($filePath);
+    }
 }
