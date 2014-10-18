@@ -9,12 +9,14 @@ namespace Envariable\Util;
  */
 class Filesystem
 {
-
     /**
      * @var string
      */
     private $applicationRootPath;
 
+    /**
+     * Constructor
+     */
     public function __construct()
     {
         $backtrace                 = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
@@ -33,6 +35,18 @@ class Filesystem
     }
 
     /**
+     * Wrapper for file_get_contents().
+     *
+     * @param string $filename
+     *
+     * @return string
+     */
+    public function fileGetContents($filename)
+    {
+        return file_get_contents($filename);
+    }
+
+    /**
      * Retrieve the config file from the given config file path.
      *
      * @param string $configFilePath
@@ -45,23 +59,27 @@ class Filesystem
     }
 
     /**
-     * Create the Envariable config file within the app's config directory from the config template file.
+     * Create directory from given path.
      *
-     * @param string $configTemplateFilePath
-     * @param string $applicationConfigFolderPath
+     * @param string $path
+     *
+     * @return boolean
      */
-    public function createConfigFile($configTemplateFilePath, $applicationConfigFolderPath)
+    public function createDirectory($path)
     {
-        $envariableConfigDirectoryPath = sprintf('%s%sEnvariable', $applicationConfigFolderPath, DIRECTORY_SEPARATOR);
+        return mkdir($path, 755);
+    }
 
-        if ( ! mkdir($envariableConfigDirectoryPath, 0755)) {
-            throw new \Exception('Could not create Envariable config folder within application config folder.');
-        }
-
-        $envariableConfigFilePath = sprintf('%s%sEnvariable%sconfig.php', $applicationConfigFolderPath, DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR);
-
-        if ( ! copy($configTemplateFilePath, $envariableConfigFilePath)) {
-            throw new \Exception('Could not copy config file to destination.');
-        }
+    /**
+     * Copy target file to destination.
+     *
+     * @param string $target
+     * @param string $destination
+     *
+     * @return boolean
+     */
+    public function copyFile($target, $destination)
+    {
+        return copy($target, $destination);
     }
 }
