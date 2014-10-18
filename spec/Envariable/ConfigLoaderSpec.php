@@ -2,10 +2,12 @@
 
 namespace spec\Envariable;
 
+use Envariable\ConfigCreator;
+use Envariable\FrameworkConfigPathLocatorCommands\BaseFrameworkConfigPathLocatorCommand;
+use Envariable\FrameworkConfigPathLocatorCommands\FrameworkConfigPathLocatorCommandInterface;
+use Envariable\Util\Filesystem;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Envariable\Config\FrameworkDetectionCommands\FrameworkDetectionCommandInterface;
-use Envariable\Util\Filesystem;
 
 /**
  * Envariable Config Loader Test.
@@ -15,6 +17,29 @@ use Envariable\Util\Filesystem;
 class ConfigLoaderSpec extends ObjectBehavior
 {
     /**
+     * @var array
+     */
+    private static $commandList;
+
+    /**
+     * Set-up
+     *
+     * @param \Envariable\Util\Filesystem $filesystem
+     */
+    function let(Filesystem $filesystem)
+    {
+        self::$commandList = array(
+            new TooHotCommand(),
+            new TooColdCommand(),
+            new JustRightCommand(),
+        );
+
+        foreach (self::$commandList as $command) {
+            $command->setFilesystem($filesystem->getWrappedObject());
+        }
+    }
+
+    /**
      * Test that the SUT is initializable.
      */
     function it_is_initializable()
@@ -23,69 +48,126 @@ class ConfigLoaderSpec extends ObjectBehavior
     }
 
     /**
-     * Test that the loader returns an array with 'class' => 'JustRightCommand'.
+     * Test that the config loader returns an array of config values.
+     *
+     * @param \Envariable\Util\Filesystem $filesystem
      */
-    function it_will_return_an_array_that_contains_class_justrightcommand()
+    function it_will_return_an_array_of_config_values(Filesystem $filesystem)
     {
-        $this->addCommand(new TooHotCommand());
-        $this->addCommand(new TooColdCommand());
-        $this->addCommand(new JustRightCommand());
+        for ($i = 0; $i < count(self::$commandList); $i++) {
+            $this->addCommand(self::$commandList[$i]);
+        }
 
-        $this->loadConfigFile()->shouldReturn(array(
-            'class' => 'JustRightCommand',
-        ));
+        $configDirectoryPath      = 'path/to/config/directory';
+        $envariableConfigFilePath = $configDirectoryPath . '/Envariable/config.php';
+        $expectedResult           = array(
+            'some-config-key' => 'some-config-value',
+        );
+
+        $filesystem
+            ->fileExists($configDirectoryPath)
+            ->willReturn(true);
+
+        $filesystem
+            ->fileExists($envariableConfigFilePath)
+            ->willReturn(true);
+
+        $filesystem
+            ->loadConfigFile($envariableConfigFilePath)
+            ->willReturn($expectedResult);
+
+        $this->setFilesystem($filesystem);
+        $this->loadConfigFile()->shouldReturn($expectedResult);
     }
 
     /**
      * Test that it will throw an exception with the message "Could not load Envariable config".
+     *
+     * @param \Envariable\Util\Filesystem $filesystem
      */
-    function it_will_throw_a_could_not_load_envariable_config_exception()
+    function it_will_throw_a_could_not_load_envariable_config_exception(Filesystem $filesystem)
     {
         $this->addCommand(new TooHotCommand());
         $this->addCommand(new TooColdCommand());
 
+        $filesystem
+            ->fileExists(null)
+            ->willReturn(false);
+
+        $this->setFilesystem($filesystem);
         $this->shouldThrow(new \RuntimeException('Could not load Envariable config.'))->duringLoadConfigFile();
+    }
+
+    /**
+     * Test that createConfigFile is called as envarible config file path does not exist.
+     *
+     * @param \Envariable\Util\Filesystem $filesystem
+     * @param \Envariable\ConfigCreator   $configCreator
+     */
+    function it_will_call_createConfigFile_as_envariable_config_file_does_not_exist(Filesystem $filesystem, ConfigCreator $configCreator)
+    {
+        for ($i = 0; $i < count(self::$commandList); $i++) {
+            $this->addCommand(self::$commandList[$i]);
+        }
+
+        $configDirectoryPath      = 'path/to/config/directory';
+        $envariableConfigFilePath = $configDirectoryPath . '/Envariable/config.php';
+        $expectedResult           = array(
+            'some-config-key' => 'some-config-value',
+        );
+
+        $filesystem
+            ->fileExists($configDirectoryPath)
+            ->willReturn(true);
+
+        $filesystem
+            ->fileExists($envariableConfigFilePath)
+            ->willReturn(false);
+
+        $configCreator
+            ->createConfigFile($envariableConfigFilePath)
+            ->shouldBeCalled();
+
+        $filesystem
+            ->loadConfigFile($envariableConfigFilePath)
+            ->willReturn($expectedResult);
+
+        $this->setFilesystem($filesystem);
+        $this->setConfigCreator($configCreator);
+        $this->loadConfigFile()->shouldreturn($expectedResult);
     }
 }
 
 /**
  * TooHotCommand Stub.
  */
-class TooHotCommand implements FrameworkDetectionCommandInterface
+class TooHotCommand extends BaseFrameworkConfigPathLocatorCommand implements FrameworkConfigPathLocatorCommandInterface
 {
-    public function setFilesystem(Filesystem $filesystem) {}
-
-    public function loadConfigFile()
+    public function locate()
     {
-        return false;
+        return null;
     }
 }
 
 /**
  * TooColdCommand Stub.
  */
-class TooColdCommand implements FrameworkDetectionCommandInterface
+class TooColdCommand extends BaseFrameworkConfigPathLocatorCommand implements FrameworkConfigPathLocatorCommandInterface
 {
-    public function setFilesystem(Filesystem $filesystem) {}
-
-    public function loadConfigFile()
+    public function locate()
     {
-        return false;
+        return null;
     }
 }
 
 /**
  * JustRightCommand Stub.
  */
-class JustRightCommand implements FrameworkDetectionCommandInterface
+class JustRightCommand extends BaseFrameworkConfigPathLocatorCommand implements FrameworkConfigPathLocatorCommandInterface
 {
-    public function setFilesystem(Filesystem $filesystem) {}
-
-    public function loadConfigFile()
+    public function locate()
     {
-        return array(
-            'class' => 'JustRightCommand',
-        );
+        return 'path/to/config/directory';
     }
 }
 

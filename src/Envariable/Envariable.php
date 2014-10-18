@@ -2,13 +2,14 @@
 
 namespace Envariable;
 
-use Envariable\Config\FrameworkDetectionCommands\CodeIgniterDetectionCommand;
-use Envariable\Config\FrameworkDetectionCommands\FrameworkDetectionCommandInterface;
-use Envariable\DotEnvConfigProcessor;
+use Envariable\ConfigCreator;
 use Envariable\ConfigLoader;
+use Envariable\DotEnvConfigProcessor;
 use Envariable\EnvironmentDetector;
-use Envariable\HostnameStrategy;
+use Envariable\FrameworkConfigPathLocatorCommands\CodeIgniterConfigPathLocatorCommand;
+use Envariable\FrameworkConfigPathLocatorCommands\FrameworkConfigPathLocatorCommandInterface;
 use Envariable\HostnameServernameStrategy;
+use Envariable\HostnameStrategy;
 use Envariable\ServernameStrategy;
 use Envariable\Util\Filesystem;
 use Envariable\Util\Server;
@@ -59,30 +60,26 @@ class Envariable
         Server $server = null,
         Filesystem $filesystem = null
     ) {
-        $this->dotEnvConfigProcessor  = $dotEnvConfigProcessor ?: new DotEnvConfigProcessor();
-        $this->configLoader           = $configLoader ?: new ConfigLoader();
-        $this->environmentDetector    = $environmentDetector ?: new EnvironmentDetector();
-        $this->server                 = $server ?: new Server();
-        $this->filesystem             = $filesystem ?: new Filesystem();
+        $this->dotEnvConfigProcessor = $dotEnvConfigProcessor ?: new DotEnvConfigProcessor();
+        $this->configLoader          = $configLoader ?: new ConfigLoader();
+        $this->environmentDetector   = $environmentDetector ?: new EnvironmentDetector();
+        $this->server                = $server ?: new Server();
+        $this->filesystem            = $filesystem ?: new Filesystem();
 
-        $frameworkDetectionCommandList = array(
-            new CodeIgniterDetectionCommand(),
+        $configCreator = new ConfigCreator();
+
+        $configCreator->setFilesystem($this->filesystem);
+        $this->configLoader->setFilesystem($this->filesystem);
+        $this->configLoader->setConfigCreator($configCreator);
+
+        $frameworkConfigPathLocatorCommandList = array(
+            new CodeIgniterConfigPathLocatorCommand(),
             // Add more commands here...
         );
 
-        array_map(array($this, 'addCommandCallback'), $frameworkDetectionCommandList);
-    }
-
-    /**
-     * Add command callback.
-     *
-     * @param \Envariable\Config\FrameworkDetectionCommands\FrameworkDetectionCommandInterface $command
-     */
-    private function addCommandCallback(FrameworkDetectionCommandInterface $frameworkDetectionCommand)
-    {
-        $frameworkDetectionCommand->setFilesystem($this->filesystem);
-
-        $this->configLoader->addCommand($frameworkDetectionCommand);
+        foreach ($frameworkConfigPathLocatorCommandList as $command) {
+            $this->configLoader->addCommand($command);
+        }
     }
 
     /**

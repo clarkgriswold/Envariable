@@ -2,7 +2,9 @@
 
 namespace Envariable;
 
-use Envariable\Config\FrameworkDetectionCommands\FrameworkDetectionCommandInterface;
+use Envariable\ConfigCreator;
+use Envariable\FrameworkConfigPathLocatorCommands\FrameworkConfigPathLocatorCommandInterface;
+use Envariable\Util\Filesystem;
 
 /**
  * Envariable Config Loader.
@@ -12,23 +14,53 @@ use Envariable\Config\FrameworkDetectionCommands\FrameworkDetectionCommandInterf
 class ConfigLoader
 {
     /**
-     * @var array
+     * @var \Envariable\Util\Filesystem
      */
-    private $configMap = array();
+    private $filesystem;
+
+    /**
+     * @var \Envariable\ConfigCreator
+     */
+    private $configCreator;
+
+    /**
+     * @var string
+     */
+    private $configPath;
 
     /**
      * @var array
      */
-    private $frameworkDetectionCommandList = array();
+    private $frameworkConfigPathLocatorCommandList = array();
+
+    /**
+     * Define the Filesystem utility.
+     *
+     * @param \Envaraible\Util\Filesystem $filesystem
+     */
+    public function setFilesystem(Filesystem $filesystem)
+    {
+        $this->filesystem = $filesystem;
+    }
+
+    /**
+     * Define the ConfigCreator.
+     *
+     * @param \Envariable\ConfigCreator $configCreator
+     */
+    public function setConfigCreator(ConfigCreator $configCreator)
+    {
+        $this->configCreator = $configCreator;
+    }
 
     /**
      * Add a command to the framework command list.
      *
-     * @param \Envariable\Config\FrameworkDetectionCommands\FrameworkDetectionCommandInterface $command
+     * @param \Envariable\FrameworkConfigPathLocatorCommands\FrameworkConigPathLocatorCommandInterface $command
      */
-    public function addCommand(FrameworkDetectionCommandInterface $command)
+    public function addCommand(FrameworkConfigPathLocatorCommandInterface $command)
     {
-        $this->frameworkDetectionCommandList[] = $command;
+        $this->frameworkConfigPathLocatorCommandList[] = $command;
     }
 
     /**
@@ -42,33 +74,39 @@ class ConfigLoader
     public function loadConfigFile()
     {
         try {
-            array_walk($this->frameworkDetectionCommandList, array($this, 'loadConfigFileCallback'));
+            array_walk($this->frameworkConfigPathLocatorCommandList, array($this, 'frameworkConfigPathLocatorCallback'));
         } catch (\RuntimeException $runtimeException) {
             // Do nothing. Exiting array_walk as soon as a config has been loaded.
         }
 
-        if ( ! count($this->configMap)) {
+        if ( ! $this->filesystem->fileExists($this->configPath)) {
             throw new \RuntimeException('Could not load Envariable config.');
         }
 
-        return $this->configMap;
+        $envariableConfigFilePath = sprintf('%s%sEnvariable%sconfig.php', $this->configPath, DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR);
+
+        if ( ! $this->filesystem->fileExists($envariableConfigFilePath)) {
+            $this->configCreator->createConfigFile($envariableConfigFilePath);
+        }
+
+        return $this->filesystem->loadConfigFile($envariableConfigFilePath);
     }
 
     /**
-     * Callback to load config file from framework detection commands.
+     * Framework config path locator callback.
      *
-     * @param \Envariable\Config\FrameworkDetectionCommands\FrameworkDetectionCommandInterface $command
+     * @param \Envariable\FrameworkConfigPathLocatorCommands\FrameworkConigPathLocatorCommandInterface $command
      *
      * @throws \RuntimeException
      */
-    private function loadConfigFileCallback(FrameworkDetectionCommandInterface $command)
+    private function frameworkConfigPathLocatorCallback(FrameworkConfigPathLocatorCommandInterface $command)
     {
-        $configMap = $command->loadConfigFile();
+        $configPath = $command->locate();
 
-        if ($configMap) {
-            $this->configMap = $configMap;
+        if ($configPath) {
+            $this->configPath = $configPath;
 
-            throw new \RuntimeException('Early exit from array_walk...');
+            throw new \RuntimeException();
         }
     }
 }

@@ -21,7 +21,7 @@ class Filesystem
     {
         $backtrace                 = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
         $backtrace                 = end($backtrace);
-        $this->applicationRootPath = substr($backtrace['file'], 0, strrpos($backtrace['file'], '/'));
+        $this->applicationRootPath = substr($backtrace['file'], 0, strrpos($backtrace['file'], DIRECTORY_SEPARATOR));
     }
 
     /**
@@ -31,7 +31,7 @@ class Filesystem
      */
     public function getApplicationRootPath()
     {
-        return $this->applicationRootPath;
+        return 'crap';//$this->applicationRootPath;
     }
 
     /**
