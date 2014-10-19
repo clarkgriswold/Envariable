@@ -29,30 +29,21 @@ class ConfigCreator
     /**
      * Copy the Envariable config template to the application config.
      *
-     * @param string $applicationConfigFolderPath
+     * @param string $applicationConfigDirectoryPath
      */
-    public function createConfigFile($applicationConfigFolderPath)
+    public function createConfigFile($applicationConfigDirectoryPath)
     {
-        $envariableConfigDirectoryPath = sprintf('%s%sEnvariable', $applicationConfigFolderPath, DIRECTORY_SEPARATOR);
+        $envariableConfigDirectoryPath = sprintf('%s%sEnvariable', $applicationConfigDirectoryPath, DIRECTORY_SEPARATOR);
 
         if ( ! $this->filesystem->createDirectory($envariableConfigDirectoryPath)) {
-            throw new \Exception('Could not create Envariable config folder within application config folder.');
+            throw new \RuntimeException('Could not create Envariable config directory.');
         }
 
-        $envariableConfigFilePath = sprintf('%s%sEnvariable%sconfig.php', $applicationConfigFolderPath, DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR);
+        $configTemplatePath       = sprintf('Config%sConfigTemplate.php', DIRECTORY_SEPARATOR);
+        $envariableConfigFilePath = sprintf('%s%sconfig.php', $envariableConfigDirectoryPath, DIRECTORY_SEPARATOR);
 
-        if ( ! $this->filesystem->copyFile($this->getConfigTemplatePath, $envariableConfigFilePath)) {
-            throw new \Exception('Could not copy config file to destination.');
+        if ( ! $this->filesystem->copyFile($configTemplatePath, $envariableConfigFilePath)) {
+            throw new \RuntimeException('Could not copy config file to destination.');
         }
-    }
-
-    /**
-     * Fetch the config template path.
-     *
-     * @return string
-     */
-    private function getConfigTemplatePath()
-    {
-        return sprintf('%s%sConfig%sConfigTemplate.php', __DIR__, DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR);
     }
 }
