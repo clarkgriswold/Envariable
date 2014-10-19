@@ -32,7 +32,7 @@ class CodeIgniterConfigPathLocatorCommandSpec extends ObjectBehavior
 <?php
 
 \$system_path = 'system';
-\$application_path = 'application';
+\$application_folder = 'application';
 
 require_once BASEPATH.'core/CodeIgniter.php';
 FC;
@@ -62,7 +62,7 @@ FC;
 <?php
 
 \$system_path = 'system';
-\$application_path = 'alternate';
+\$application_folder = 'alternate';
 
 require_once BASEPATH.'core/CodeIgniter.php';
 FC;
@@ -92,7 +92,7 @@ FC;
 <?php
 
 \$system_path = 'system';
-\$application_path = 'application';
+\$application_folder = 'application';
 FC;
 
         $filesystem
@@ -119,7 +119,7 @@ FC;
 <?php
 
 \$system_path = 'system';
-\$renamed_application_path = 'alternate';
+\$renamed_application_folder = 'alternate';
 
 require_once BASEPATH.'core/CodeIgniter.php';
 FC;

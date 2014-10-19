@@ -26,7 +26,7 @@ class CodeIgniterConfigPathLocatorCommand extends BaseFrameworkConfigPathLocator
             return null;
         }
 
-        if (preg_match('/\$application_path\s*=\s*\'(.*)\';/', $contents, $matches) === 0) {
+        if (preg_match('/\$application_folder\s*=\s*\'(.*)\';/', $contents, $matches) === 0) {
             throw new \RuntimeException('Application path could not be found.');
         }
 
