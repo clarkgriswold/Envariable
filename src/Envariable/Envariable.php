@@ -78,6 +78,8 @@ class Envariable
         );
 
         foreach ($frameworkConfigPathLocatorCommandList as $command) {
+            $command->setFilesystem($this->filesystem);
+
             $this->configLoader->addCommand($command);
         }
     }

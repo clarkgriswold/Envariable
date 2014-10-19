@@ -31,7 +31,7 @@ class Filesystem
      */
     public function getApplicationRootPath()
     {
-        return 'crap';//$this->applicationRootPath;
+        return $this->applicationRootPath;
     }
 
     /**
