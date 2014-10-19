@@ -37,17 +37,22 @@ Run composer install.
 
 Within your front controller (index.php) be sure to require the composer autoloader:
 
+```php
     include_once __DIR__ . '/vendor/autoload.php';
+```
 
 Then, just below that add:
 
+```php
     $envariable = new Envariable\Envariable();
     $envariable->execute();
+```
 
 Then, where CodeIgniter defines the ENVIRONMENT constant, change that to this:
 
+```php
     define('ENVIRONMENT', $envariable->getEnvironmentDetector()->getEnvironment());
-
+```
 
 Upon reloading the site you will now see an exception being thrown. Obviously you will only see the exception if you have error reporting enabled.
 
