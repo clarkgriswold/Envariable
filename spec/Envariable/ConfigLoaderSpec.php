@@ -7,7 +7,6 @@ use Envariable\FrameworkConfigPathLocatorCommands\BaseFrameworkConfigPathLocator
 use Envariable\FrameworkConfigPathLocatorCommands\FrameworkConfigPathLocatorCommandInterface;
 use Envariable\Util\Filesystem;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 /**
  * Envariable Config Loader Test.

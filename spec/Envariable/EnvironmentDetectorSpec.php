@@ -7,7 +7,6 @@ use Envariable\HostnameServernameStrategy;
 use Envariable\ServernameStrategy;
 use Envariable\Util\Server;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 /**
  * Environment Detector Test.

@@ -8,7 +8,6 @@ use Envariable\EnvironmentDetector;
 use Envariable\Util\Server;
 use Envariable\Util\Filesystem;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 /**
  * Envariable Test.

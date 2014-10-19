@@ -2,9 +2,8 @@
 
 namespace spec\Envariable\FrameworkConfigPathLocatorCommands;
 
-use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use Envariable\Util\Filesystem;
+use PhpSpec\ObjectBehavior;
 
 /**
  * CodeIgniter Config Path Locator Command Test.

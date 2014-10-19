@@ -4,7 +4,6 @@ namespace spec\Envariable;
 
 use Envariable\Util\Filesystem;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 class ConfigCreatorSpec extends ObjectBehavior
 {
