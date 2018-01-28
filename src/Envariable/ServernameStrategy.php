@@ -16,6 +16,6 @@ class ServernameStrategy implements EnvironmentValidationStrategyInterface
      */
     public function validate(array $configMap)
     {
-        return strpos($_SERVER['SERVER_NAME'], $configMap['servername']) === 0;
+        return strpos($_SERVER['SERVER_NAME'], $configMap['servername']) !== false;
     }
 }
