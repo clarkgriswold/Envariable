@@ -130,7 +130,10 @@ class DotEnvConfigProcessor
      */
     private function defineWithinEnvSuperGlobal($prefix, $key, $value)
     {
-        $key = sprintf('%s_%s', strtoupper($prefix), strtoupper($key));
+        $key = $prefix
+            ? sprintf('%s_%s', strtoupper($prefix), strtoupper($key))
+            : strtoupper($key)
+        ;
 
         if (array_key_exists($key, $_ENV)) {
             throw new \RuntimeException('An environment variable with the key "' . $key . '" already exists. Aborting.');
@@ -150,12 +153,15 @@ class DotEnvConfigProcessor
      */
     private function defineWithinEnvironmentStore($prefix, $key, $value)
     {
-        $environmentVariableName = sprintf('%s_%s', strtoupper($prefix), strtoupper($key));
+        $key = $prefix
+            ? sprintf('%s_%s', strtoupper($prefix), strtoupper($key))
+            : strtoupper($key)
+        ;
 
-        if (getenv($environmentVariableName)) {
-            throw new \RuntimeException('An environment variable with the name "' . $environmentVariableName . '" already exists. Aborting.');
+        if (getenv($key)) {
+            throw new \RuntimeException('An environment variable with the name "' . $key . '" already exists. Aborting.');
         }
 
-        putenv(sprintf('%s=%s', $environmentVariableName, $value));
+        putenv(sprintf('%s=%s', $key, $value));
     }
 }
