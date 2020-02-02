@@ -6,7 +6,7 @@ ENVARIABLE
 
 ##### Why does this exist?
 
-I created Envariable because I have an old CodeIgniter project that I still have to maintain and I've never been too keen on how CI deals with environments. In seeing how Laravel handles this with .env files, I set out to flagrantly steal that idea and use it for my own needs (falling short of a complete rewrite using Laravel or even Symfony which, believe me, I would love to do). Also, I used this as an excuse to learn how to create composer packages. Something I've never done prior to this.
+I created Envariable because I have an old CodeIgniter project that I still have to maintain and I've never been too keen on how CI deals with environments. In seeing how Laravel handles this with .env files, I set out to flagrantly steal that idea and use it for my own needs (falling short of a complete rewrite using Laravel or even Symfony which, believe me, I would love to do).
 
 Currently Envariable only supports CodeIgniter, but I built it in such a way that it can be easily adapted to other frameworks or projects should the need arise.
 
@@ -32,7 +32,7 @@ After that you'll have to add this:
 
 ```javascript
     "require": {
-        "clarkgriswold/envariable": "dev-master"
+        "clarkgriswold/envariable": "^1.0"
     }
 ```
 
